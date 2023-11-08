@@ -15,6 +15,7 @@
 
 package com.dcaiti.mosaic.app.tse.data;
 
+@SuppressWarnings("unused")
 public interface ISampledVehicleSpeed {
     String getConnectionId();
 

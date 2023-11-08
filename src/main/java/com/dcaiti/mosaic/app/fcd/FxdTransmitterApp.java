@@ -187,7 +187,7 @@ public abstract class FxdTransmitterApp<
     }
 
     @Override
-    public void processEvent(Event event) throws Exception {
+    public void processEvent(Event event) {
 
     }
 

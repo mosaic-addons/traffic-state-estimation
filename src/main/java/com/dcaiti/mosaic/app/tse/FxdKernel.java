@@ -196,7 +196,7 @@ public abstract class FxdKernel<
      * @param senderId            the id of the unit that has been recognized to traverse a connection
      * @param currentConnectionId the traversed connection
      * @param senderRecords       all relevant {@link RecordT records} for the traversals
-     * @return
+     * @return the extracted {@link TraversalT traversal}
      */
     private TraversalT extractTraversal(String senderId, String currentConnectionId, SortedMap<Long, RecordT> senderRecords) {
         // extract all entries on the earliest connection traversal
@@ -228,7 +228,7 @@ public abstract class FxdKernel<
     }
 
     @Override
-    public void processEvent(Event event) throws Exception {
+    public void processEvent(Event event) {
         if (event instanceof ExpiredUnitRemovalEvent) {
             triggerExpiredUnitRemoval(oldestAllowedRecordTime);
         } else {

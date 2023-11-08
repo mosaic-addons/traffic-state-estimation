@@ -112,7 +112,7 @@ public abstract class FxdReceiverApp<
     }
 
     @Override
-    public void processEvent(Event event) throws Exception {
+    public void processEvent(Event event) {
 
     }
 

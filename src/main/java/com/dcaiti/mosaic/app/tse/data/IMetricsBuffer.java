@@ -17,6 +17,7 @@ package com.dcaiti.mosaic.app.tse.data;
 
 import java.util.List;
 
+@SuppressWarnings("unused")
 public interface IMetricsBuffer {
 
     void putOrAddSample(long timeStamp, ISampledVehicleSpeed sampledVehicleSpeed);

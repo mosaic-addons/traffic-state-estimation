@@ -42,20 +42,6 @@ public final class SpatioTemporalTrafficMetric {
     }
 
     /**
-     * computes the relative traffic status metric (RTSM) proposed by Yoon et al.
-     *
-     * @param traversalStatistics to compute RTSM for
-     * @param fcdDataStorage      to gather data from
-     * @return the RTSM as a value between 0 and 1 with 0 being good and 1 being bad.
-     */
-    public static float computeRelativeTrafficStatusMetric(TraversalStatistics traversalStatistics, FcdDataStorage fcdDataStorage) {
-        return computeRelativeTrafficStatusMetric(
-                traversalStatistics.getTemporalMeanSpeed(), traversalStatistics.getSpatialMeanSpeed(),
-                traversalStatistics.getConnectionId(), fcdDataStorage
-        );
-    }
-
-    /**
      * Computes the relative traffic status metric proposed by Yoon et al.
      *
      * @param temporalMeanSpeed of data point
