@@ -4,7 +4,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>com.dcaiti.app</groupId>
+    <groupId>com.dcaiti.mosaic.app</groupId>
     <artifactId>traffic-state-estimation</artifactId>
     <version>24.0-SNAPSHOT</version>
     <packaging>jar</packaging>
@@ -60,4 +60,15 @@
             </snapshots>
         </repository>
     </repositories>
+
+    <build>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <artifactId>maven-deploy-plugin</artifactId>
+                    <version>3.1.1</version>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+    </build>
 </project>
