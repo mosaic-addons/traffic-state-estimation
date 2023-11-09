@@ -81,8 +81,8 @@ public abstract class FxdUpdateMessage<RecordT extends FxdRecord> extends V2xMes
      * @param <RecordT>  concrete type of the records
      * @param <UpdateT>  concrete type of the updates being built
      */
-    interface UpdateBuilder<
-            BuilderT extends UpdateBuilder<BuilderT, RecordT, UpdateT>,
+    interface FxdUpdateMessageBuilder<
+            BuilderT extends FxdUpdateMessageBuilder<BuilderT, RecordT, UpdateT>,
             RecordT extends FxdRecord,
             UpdateT extends FxdUpdateMessage<RecordT>> {
 

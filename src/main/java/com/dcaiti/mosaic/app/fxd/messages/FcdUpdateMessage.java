@@ -49,13 +49,13 @@ public class FcdUpdateMessage extends FxdUpdateMessage<FcdRecord> {
                 .toString();
     }
 
-    public static class Builder extends AbstractUpdateBuilder<Builder, FcdRecord, FcdUpdateMessage> {
-        public Builder(MessageRouting messageRouting, long timestamp) {
+    public static class FcdUpdateMessageBuilder extends AbstractUpdateMessageBuilder<FcdUpdateMessageBuilder, FcdRecord, FcdUpdateMessage> {
+        public FcdUpdateMessageBuilder(MessageRouting messageRouting, long timestamp) {
             super(messageRouting, timestamp);
         }
 
         @Override
-        protected Builder getThis() {
+        protected FcdUpdateMessageBuilder getThis() {
             return this;
         }
 

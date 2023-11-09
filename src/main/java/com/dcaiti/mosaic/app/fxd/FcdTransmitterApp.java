@@ -26,7 +26,7 @@ import org.eclipse.mosaic.lib.objects.vehicle.VehicleData;
 /**
  * An extension of {@link FxdTransmitterApp}, adding functionality for including perception data.
  */
-public class FcdTransmitterApp extends FxdTransmitterApp<CFcdTransmitterApp, FcdRecord, FcdRecord.Builder, FcdUpdateMessage, FcdUpdateMessage.Builder> {
+public class FcdTransmitterApp extends FxdTransmitterApp<CFcdTransmitterApp, FcdRecord, FcdRecord.Builder, FcdUpdateMessage, FcdUpdateMessage.FcdUpdateMessageBuilder> {
 
     public FcdTransmitterApp() {
         super(CFcdTransmitterApp.class);
@@ -77,8 +77,8 @@ public class FcdTransmitterApp extends FxdTransmitterApp<CFcdTransmitterApp, Fcd
     }
 
     @Override
-    protected FcdUpdateMessage.Builder prebuildUpdate(MessageRouting messageRouting) {
-        return new FcdUpdateMessage.Builder(messageRouting, getOs().getSimulationTime()).addRecords(recordBuffer);
+    protected FcdUpdateMessage.FcdUpdateMessageBuilder prebuildUpdate(MessageRouting messageRouting) {
+        return new FcdUpdateMessage.FcdUpdateMessageBuilder(messageRouting, getOs().getSimulationTime()).addRecords(recordBuffer);
     }
 
 }

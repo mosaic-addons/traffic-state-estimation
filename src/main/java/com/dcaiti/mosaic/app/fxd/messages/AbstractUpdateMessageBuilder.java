@@ -29,18 +29,18 @@ import java.util.TreeMap;
  * @param <RecordT>  concrete type of the record
  * @param <UpdateT>  concrete type of the update
  */
-public abstract class AbstractUpdateBuilder<
-        BuilderT extends FxdUpdateMessage.UpdateBuilder<BuilderT, RecordT, UpdateT>,
+public abstract class AbstractUpdateMessageBuilder<
+        BuilderT extends FxdUpdateMessage.FxdUpdateMessageBuilder<BuilderT, RecordT, UpdateT>,
         RecordT extends FxdRecord,
         UpdateT extends FxdUpdateMessage<RecordT>
         >
-        implements FxdUpdateMessage.UpdateBuilder<BuilderT, RecordT, UpdateT> {
+        implements FxdUpdateMessage.FxdUpdateMessageBuilder<BuilderT, RecordT, UpdateT> {
     protected final MessageRouting messageRouting;
     protected final long timestamp;
     protected final SortedMap<Long, RecordT> records = new TreeMap<>();
     protected boolean isFinal = false;
 
-    public AbstractUpdateBuilder(MessageRouting messageRouting, long timestamp) {
+    public AbstractUpdateMessageBuilder(MessageRouting messageRouting, long timestamp) {
         this.messageRouting = messageRouting;
         this.timestamp = timestamp;
     }

@@ -18,7 +18,7 @@ package com.dcaiti.mosaic.app.fxd;
 import com.dcaiti.mosaic.app.fxd.config.CFxdTransmitterApp;
 import com.dcaiti.mosaic.app.fxd.data.AbstractRecordBuilder;
 import com.dcaiti.mosaic.app.fxd.data.FxdRecord;
-import com.dcaiti.mosaic.app.fxd.messages.AbstractUpdateBuilder;
+import com.dcaiti.mosaic.app.fxd.messages.AbstractUpdateMessageBuilder;
 import com.dcaiti.mosaic.app.fxd.messages.FxdUpdateMessage;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.communication.CamBuilder;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.communication.ReceivedAcknowledgement;
@@ -46,7 +46,7 @@ public abstract class FxdTransmitterApp<
         RecordT extends FxdRecord,
         RecordBuilderT extends AbstractRecordBuilder<RecordBuilderT, RecordT>,
         UpdateT extends FxdUpdateMessage<RecordT>,
-        UpdateBuilderT extends AbstractUpdateBuilder<UpdateBuilderT, RecordT, UpdateT>>
+        UpdateBuilderT extends AbstractUpdateMessageBuilder<UpdateBuilderT, RecordT, UpdateT>>
         extends ConfigurableApplication<ConfigT, VehicleOperatingSystem> implements VehicleApplication, CommunicationApplication {
 
     /**
@@ -210,10 +210,10 @@ public abstract class FxdTransmitterApp<
     protected abstract RecordBuilderT prebuildRecord(VehicleData vehicleData);
 
     /**
-     * Creates an {@link AbstractUpdateBuilder} containing all information regarding the specialized implementation.
+     * Creates an {@link AbstractUpdateMessageBuilder} containing all information regarding the specialized implementation.
      *
      * @param messageRouting the routing for the update
-     * @return an {@link AbstractUpdateBuilder} to finish the creation of the actual {@link UpdateT Update}.
+     * @return an {@link AbstractUpdateMessageBuilder} to finish the creation of the actual {@link UpdateT Update}.
      */
     protected abstract UpdateBuilderT prebuildUpdate(MessageRouting messageRouting);
 }
