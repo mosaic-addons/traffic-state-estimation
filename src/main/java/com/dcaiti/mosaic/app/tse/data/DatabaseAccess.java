@@ -15,13 +15,14 @@
 
 package com.dcaiti.mosaic.app.tse.data;
 
+import com.dcaiti.mosaic.app.tse.TseKernel;
 import com.dcaiti.mosaic.app.tse.persistence.FcdDataStorage;
 import org.eclipse.mosaic.lib.database.Database;
 
 /**
  * An interface to be implemented by {@link com.dcaiti.mosaic.app.tse.processors.FxdProcessor processors} that need access to the
  * {@link Database Network Database} and/or the {@link FcdDataStorage}.
- * The respective method will be called by the {@link com.dcaiti.mosaic.app.tse.FcdKernel FcdKernel}.
+ * The respective method will be called by the {@link TseKernel}.
  */
 public interface DatabaseAccess {
     /**

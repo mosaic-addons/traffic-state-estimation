@@ -15,7 +15,7 @@
 
 package com.dcaiti.mosaic.app.tse.persistence;
 
-import com.dcaiti.mosaic.app.fcd.data.FcdRecord;
+import com.dcaiti.mosaic.app.fxd.data.FcdRecord;
 import com.dcaiti.mosaic.app.tse.data.IMetricsBuffer;
 import com.dcaiti.mosaic.app.tse.data.TraversalStatistics;
 import org.eclipse.mosaic.fed.application.ambassador.util.UnitLogger;

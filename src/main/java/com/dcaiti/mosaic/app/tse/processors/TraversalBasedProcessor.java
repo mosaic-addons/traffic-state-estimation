@@ -15,8 +15,8 @@
 
 package com.dcaiti.mosaic.app.tse.processors;
 
-import com.dcaiti.mosaic.app.fcd.data.FxdRecord;
-import com.dcaiti.mosaic.app.fcd.data.FxdTraversal;
+import com.dcaiti.mosaic.app.fxd.data.FxdRecord;
+import com.dcaiti.mosaic.app.fxd.data.FxdTraversal;
 import com.dcaiti.mosaic.app.tse.FxdKernel;
 import com.dcaiti.mosaic.app.tse.gson.TraversalBasedProcessorTypeAdapterFactory;
 

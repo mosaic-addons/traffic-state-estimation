@@ -1,0 +1,20 @@
+{
+    "prototypes": [
+        {
+            "name": "DefaultVehicle",
+            "applications": [
+                "com.dcaiti.mosaic.app.fcd.FcdTransmitterApp"
+            ],
+            "weight": 1.0
+        }
+    ],
+    "servers": [
+        {
+            "name": "TseServer",
+            "group": "SampleServer",
+            "applications": [
+                "com.dcaiti.mosaic.app.fcd.TseServerApp"
+            ]
+        }
+    ]
+}

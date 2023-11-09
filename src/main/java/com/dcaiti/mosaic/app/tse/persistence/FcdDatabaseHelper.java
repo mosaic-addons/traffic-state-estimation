@@ -15,7 +15,8 @@
 
 package com.dcaiti.mosaic.app.tse.persistence;
 
-import com.dcaiti.mosaic.app.fcd.data.FcdRecord;
+import com.dcaiti.mosaic.app.fxd.data.FcdRecord;
+import com.dcaiti.mosaic.app.tse.config.CTseServerApp;
 import com.dcaiti.mosaic.app.tse.data.IMetricsBuffer;
 import com.dcaiti.mosaic.app.tse.data.TraversalStatistics;
 import org.eclipse.mosaic.fed.application.ambassador.util.UnitLogger;
@@ -66,7 +67,7 @@ public class FcdDatabaseHelper implements FcdDataStorage {
     private static final String COLUMN_SPATIAL_THRESHOLD = "spatialThreshold";
     private static final String COLUMN_RELATIVE_TRAFFIC_METRIC = "relativeTrafficStatusMetric";
     /**
-     * Configurable parameter using the {@link com.dcaiti.mosaic.app.fcd.config.CTrafficStateEstimationServerApp#fcdDataStorage}
+     * Configurable parameter using the {@link CTseServerApp#fcdDataStorage}
      * type-based config. If this is set to {@code true} all sqlite transactions will be handled in-memory, which may lead to increased
      * RAM usage but could also gain performance improvements.
      * Note: if simulation crashes during execution, all data will be lost as the backup is executed in the {@link #shutdown()} method.

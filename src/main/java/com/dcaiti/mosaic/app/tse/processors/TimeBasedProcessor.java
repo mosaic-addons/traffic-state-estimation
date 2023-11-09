@@ -15,8 +15,8 @@
 
 package com.dcaiti.mosaic.app.tse.processors;
 
-import com.dcaiti.mosaic.app.fcd.data.FxdRecord;
-import com.dcaiti.mosaic.app.fcd.messages.FxdUpdate;
+import com.dcaiti.mosaic.app.fxd.data.FxdRecord;
+import com.dcaiti.mosaic.app.fxd.messages.FxdUpdateMessage;
 import com.dcaiti.mosaic.app.tse.gson.TimeBasedProcessorTypeAdapterFactory;
 import org.eclipse.mosaic.fed.application.ambassador.util.UnitLogger;
 import org.eclipse.mosaic.lib.util.gson.TimeFieldAdapter;
@@ -33,7 +33,7 @@ import org.apache.commons.lang3.ClassUtils;
  * @param <UpdateT> type of the used update
  */
 @JsonAdapter(TimeBasedProcessorTypeAdapterFactory.class)
-public abstract class TimeBasedProcessor<RecordT extends FxdRecord, UpdateT extends FxdUpdate<RecordT>> implements FxdProcessor {
+public abstract class TimeBasedProcessor<RecordT extends FxdRecord, UpdateT extends FxdUpdateMessage<RecordT>> implements FxdProcessor {
 
     /**
      * Sets the time interval at which the {@link #triggerEvent} function is being called.

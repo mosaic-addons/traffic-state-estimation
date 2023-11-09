@@ -15,13 +15,14 @@
 
 package com.dcaiti.mosaic.app.tse.events;
 
+import com.dcaiti.mosaic.app.tse.config.CFxdReceiverApp;
 import org.eclipse.mosaic.lib.util.scheduling.Event;
 import org.eclipse.mosaic.lib.util.scheduling.EventProcessor;
 
 import javax.annotation.Nonnull;
 
 /**
- * This event is scheduled within a fixed configured interval (see {@link com.dcaiti.mosaic.app.fcd.config.CFxdReceiverApp CFxdReceiverApp})
+ * This event is scheduled within a fixed configured interval (see {@link CFxdReceiverApp CFxdReceiverApp})
  * and will trigger the removal of all outdated units.
  */
 public class ExpiredUnitRemovalEvent extends Event {

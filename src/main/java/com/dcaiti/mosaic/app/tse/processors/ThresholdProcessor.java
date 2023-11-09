@@ -15,9 +15,9 @@
 
 package com.dcaiti.mosaic.app.tse.processors;
 
-import com.dcaiti.mosaic.app.fcd.config.CTrafficStateEstimationServerApp;
-import com.dcaiti.mosaic.app.fcd.data.FcdRecord;
-import com.dcaiti.mosaic.app.fcd.messages.FcdUpdate;
+import com.dcaiti.mosaic.app.fxd.data.FcdRecord;
+import com.dcaiti.mosaic.app.fxd.messages.FcdUpdateMessage;
+import com.dcaiti.mosaic.app.tse.config.CTseServerApp;
 import com.dcaiti.mosaic.app.tse.data.DatabaseAccess;
 import com.dcaiti.mosaic.app.tse.persistence.FcdDataStorage;
 import com.dcaiti.mosaic.app.tse.persistence.FcdDatabaseHelper;
@@ -45,7 +45,7 @@ import java.util.stream.Collectors;
  * @see SpatioTemporalTrafficMetric
  * @see FcdDatabaseHelper
  */
-public class ThresholdProcessor extends TimeBasedProcessor<FcdRecord, FcdUpdate> implements DatabaseAccess {
+public class ThresholdProcessor extends TimeBasedProcessor<FcdRecord, FcdUpdateMessage> implements DatabaseAccess {
 
     private final static String IDENTIFIER = createIdentifier(ThresholdProcessor.class);
     public static final int MIN_RECORDED_TRAVERSALS_FOR_TL_HEURISTIC = 10;
@@ -184,7 +184,7 @@ public class ThresholdProcessor extends TimeBasedProcessor<FcdRecord, FcdUpdate>
     }
 
     /**
-     * Updates the {@link #redLightDurations} map with a given redLightDuration from the {@link CTrafficStateEstimationServerApp},
+     * Updates the {@link #redLightDurations} map with a given redLightDuration from the {@link CTseServerApp},
      * if the difference between 5th and 60th percentile of travel time for a connection is above the given estimation
      * of red light duration, but not greater than 3 times the duration.
      *
@@ -264,7 +264,7 @@ public class ThresholdProcessor extends TimeBasedProcessor<FcdRecord, FcdUpdate>
     }
 
     @Override
-    public void handleUpdate(FcdUpdate update) {
+    public void handleUpdate(FcdUpdateMessage update) {
         // nop
     }
 }

@@ -15,9 +15,9 @@
 
 package com.dcaiti.mosaic.app.tse.processors;
 
-import com.dcaiti.mosaic.app.fcd.TrafficStateEstimationServerApp;
-import com.dcaiti.mosaic.app.fcd.data.FcdRecord;
-import com.dcaiti.mosaic.app.fcd.data.FcdTraversal;
+import com.dcaiti.mosaic.app.fxd.data.FcdRecord;
+import com.dcaiti.mosaic.app.fxd.data.FcdTraversal;
+import com.dcaiti.mosaic.app.tse.TseServerApp;
 import com.dcaiti.mosaic.app.tse.data.DatabaseAccess;
 import com.dcaiti.mosaic.app.tse.persistence.FcdDataStorage;
 import com.dcaiti.mosaic.app.tse.persistence.FcdDatabaseHelper;
@@ -43,7 +43,7 @@ import java.util.List;
  * This Data needs to be preprocessed, as it is the base from which the thresholds are derived.
  *
  * @see FcdDatabaseHelper
- * @see TrafficStateEstimationServerApp
+ * @see TseServerApp
  */
 public class SpatioTemporalProcessor implements TraversalBasedProcessor<FcdRecord, FcdTraversal>, DatabaseAccess {
     private final static int CONNECTION_LENGTH_THRESHOLD = 5;

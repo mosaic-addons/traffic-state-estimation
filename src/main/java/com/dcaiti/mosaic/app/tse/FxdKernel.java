@@ -15,11 +15,10 @@
 
 package com.dcaiti.mosaic.app.tse;
 
-import com.dcaiti.mosaic.app.fcd.FxdReceiverApp;
-import com.dcaiti.mosaic.app.fcd.config.CFxdReceiverApp;
-import com.dcaiti.mosaic.app.fcd.data.FxdRecord;
-import com.dcaiti.mosaic.app.fcd.data.FxdTraversal;
-import com.dcaiti.mosaic.app.fcd.messages.FxdUpdate;
+import com.dcaiti.mosaic.app.fxd.data.FxdRecord;
+import com.dcaiti.mosaic.app.fxd.data.FxdTraversal;
+import com.dcaiti.mosaic.app.fxd.messages.FxdUpdateMessage;
+import com.dcaiti.mosaic.app.tse.config.CFxdReceiverApp;
 import com.dcaiti.mosaic.app.tse.events.ExpiredUnitRemovalEvent;
 import com.dcaiti.mosaic.app.tse.processors.FxdProcessor;
 import com.dcaiti.mosaic.app.tse.processors.MessageBasedProcessor;
@@ -51,7 +50,7 @@ import javax.annotation.Nullable;
  *                     periodically transmit to the server
  * @param <TraversalT> Traversal type (extension of {@link FxdTraversal}) containing the traversal of a single connection consisting of a
  *                     list of {@link RecordT Records}.
- * @param <UpdateT>    Updated type (extension of {@link FxdUpdate}) representing the actual messages send by units.
+ * @param <UpdateT>    Updated type (extension of {@link FxdUpdateMessage}) representing the actual messages send by units.
  *                     The most generic implementation contains a collection of records sampled by a unit.
  * @param <ConfigT>    Type of the configuration (extension of {@link CFxdReceiverApp}) in its generic form this class contains
  *                     configuration parameters for the expired unit removal and the configured {@link FxdProcessor FxdProcessors}.
@@ -59,7 +58,7 @@ import javax.annotation.Nullable;
 public abstract class FxdKernel<
         RecordT extends FxdRecord,
         TraversalT extends FxdTraversal<RecordT, TraversalT>,
-        UpdateT extends FxdUpdate<RecordT>,
+        UpdateT extends FxdUpdateMessage<RecordT>,
         ConfigT extends CFxdReceiverApp<RecordT, TraversalT, UpdateT>>
         implements EventProcessor {
     private final EventManager eventManager;
@@ -155,10 +154,10 @@ public abstract class FxdKernel<
         }
     }
 
-    private void processUpdateForTraversals(FxdUpdate<RecordT> fxdUpdate) {
-        String senderId = fxdUpdate.getRouting().getSource().getSourceName();
-        List<String> senderConnections = extractTraversedConnections(senderId, fxdUpdate.getRecords());
-        SortedMap<Long, RecordT> senderRecords = enqueueRecords(senderId, fxdUpdate.getRecords());
+    private void processUpdateForTraversals(FxdUpdateMessage<RecordT> fxdUpdateMessage) {
+        String senderId = fxdUpdateMessage.getRouting().getSource().getSourceName();
+        List<String> senderConnections = extractTraversedConnections(senderId, fxdUpdateMessage.getRecords());
+        SortedMap<Long, RecordT> senderRecords = enqueueRecords(senderId, fxdUpdateMessage.getRecords());
         // if there is more than one connection, we know there is a completed traversal
         while (senderConnections.size() > 1) { // we cannot be sure that only on connection has been traversed in the last update
             TraversalT traversal = extractTraversal(senderId, senderConnections.get(0), senderRecords);
@@ -318,7 +317,7 @@ public abstract class FxdKernel<
      * This method is used for specialized handling of {@link UpdateT updates} that is outside the scope of the {@link FxdKernel}
      * implementation.
      *
-     * @param update an extension of {@link FxdUpdate} received from a unit
+     * @param update an extension of {@link FxdUpdateMessage} received from a unit
      */
     protected abstract void additionalProcessingOfUpdate(UpdateT update);
 
