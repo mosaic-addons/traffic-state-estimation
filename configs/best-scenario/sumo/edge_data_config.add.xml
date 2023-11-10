@@ -1,0 +1,3 @@
+    <additional>
+        <edgeData id="edge-data"  file="../../edge-data.xml" freq="900" excludeEmpty="true" trackVehicles="true" />
+    </additional>

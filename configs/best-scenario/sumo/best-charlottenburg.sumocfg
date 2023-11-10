@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- generated on 2022-01-29 11:18:10 by Eclipse SUMO sumo Version 1.11.0
+-->
+
+<configuration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/sumoConfiguration.xsd">
+
+    <input>
+        <net-file value="berlin.net.xml"/>
+        <route-files value="charlottenburg.rou.gz"/>
+        <additional-files value="loop_detectors.add.xml,edge_data_config.add.xml"/>   
+    </input>
+    <time>
+        <begin value="0"/>
+         <end value="86400.0"/>
+    </time>
+
+    <processing>
+        <route-steps value="200"/>
+        <no-internal-links value="false"/>
+        <ignore-junction-blocker value="20"/>
+        <time-to-teleport value="120.0"/>
+        <time-to-teleport.highways value="0"/>
+        <eager-insert value="false"/>
+    </processing>
+
+    <random_number>
+        <random value="false"/>
+    </random_number>
+
+</configuration>
