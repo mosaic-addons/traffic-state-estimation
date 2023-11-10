@@ -150,6 +150,5 @@ When using the applications in your own research, please include a reference to 
 > TODO: Add reference
 
 
-
-[^1] Yoon, Jungkeun; Noble, Brian; Liu, Mingyan. *Surface street traffic estimation*. In: Proceedings of the 5th international conference on Mobile systems, applications and services. 2007. S. 220-232
+[^1]: Yoon, Jungkeun; Noble, Brian; Liu, Mingyan. *Surface street traffic estimation*. In: Proceedings of the 5th international conference on Mobile systems, applications and services. 2007. S. 220-232
 [^2]: Schrab, K., Protzmann, R., Radusch, I. (2023). *A Large-Scale Traffic Scenario of Berlin for Evaluating Smart Mobility Applications*. In: Nathanail, E.G., Gavanas, N., Adamos, G. (eds) Smart Energy for Smart Transport. CSUM 2022. Lecture Notes in Intelligent Transportation and Infrastructure. Springer, Cham. https://doi.org/10.1007/978-3-031-23721-8_24
