@@ -8,6 +8,7 @@ Furthermore, we provide additional MOSAIC configuration files to be used with th
 
 ## Documentation
 <p align="center"><img width="50%" src=".github/fcd-system-overview.png"/></p>
+
 The picture above depicts the fundamental structure and functioning of this application suite.
 The functionality is split across two applications `TseServerApp` and the `FcdTransmitterApp`.
 The `FcdTransmitterApp` is a vehicle application that will periodically send FCD messages to the `TseServerApp`.
@@ -18,13 +19,23 @@ code that is concerned with the transmission and reception of messages (i.e., FC
 state from the received FCD (i.e., TSE).
 
 ### Usage
->If this is your first time encountering Eclipse MOSAIC, please refer to the [Documentation](https://eclipse.dev/mosaic/docs/) and
->[Tutorials](https://eclipse.dev/mosaic/tutorials/) to get a grasp of MOSAICs' core functionalities and working principles.
+If this is your first time encountering Eclipse MOSAIC, please refer to the [Documentation](https://eclipse.dev/mosaic/docs/) and
+[Tutorials](https://eclipse.dev/mosaic/tutorials/) to get a grasp of MOSAICs' core functionalities and working principles.
+
+To use the applications, you need to build them with [Maven](https://maven.apache.org/) by calling the following command
+in the root directory of this repository: 
+```shell
+mvn clean install
+```
+This will download all required dependencies and package the applications into a jar file (`traffic-state-estimation-<version>.jar`).
+To use the allplications with your scenario, copy the generated jar-file from the `target` directory to the `application` 
+directory of your scenario and follow the subsequent steps to properly configure all simulators accordingly. 
 
 **Mapping**
 
 To deploy the applications with your scenario, you need to adjust the *mapping_config.json* accordingly.
-Below is an exemplary configuration that you can adjust to your needs. Additionally, the bundled mapping file ([best-configuration/mapping/mapping_config.json](configs/best-scenario/mapping/mapping_config.json))
+Below is an exemplary configuration that you can adjust to your needs. Additionally, the bundled mapping file 
+([configs/best-scenario/mapping/mapping_config.json](configs/best-scenario/mapping/mapping_config.json))
 can be used directly in conjunction with the BeST Scenario.
 ```json
 {
@@ -70,7 +81,7 @@ can be used directly in conjunction with the BeST Scenario.
 **Cell Simulator**
 
 Additionally, when using servers with MOSAICs cell simulator, you need to adjust the *network.json* and configure the server group.
-Below is an example of how this could look like. This can also be found in [best-configuration/cell/network.json](configs/best-scenario/cell/network.json).
+Below is an example of how this could look like. This can also be found in [configs/best-scenario/cell/network.json](configs/best-scenario/cell/network.json).
 
 ```json
 {
@@ -142,12 +153,6 @@ which are used to configure the vehicles and the server respectively.
     ]
 }
 ```
-
-## Attribution
-The code contained in this repository was presented at [EAI SimuTools 2023](https://simutools.eai-conferences.org/2023/).
-When using the applications in your own research, please include a reference to the published paper.
-
-> TODO: Add reference
 
 
 [^1]: Yoon, Jungkeun; Noble, Brian; Liu, Mingyan. *Surface street traffic estimation*. In: Proceedings of the 5th international conference on Mobile systems, applications and services. 2007. S. 220-232

@@ -5,7 +5,7 @@
             "applications": [
                 "com.dcaiti.mosaic.app.fxd.FcdTransmitterApp"
             ],
-            "weight": 1.0
+            "weight": 0.1
         }
     ],
     "servers": [
