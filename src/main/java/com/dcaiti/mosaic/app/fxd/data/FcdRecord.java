@@ -69,7 +69,8 @@ public class FcdRecord extends FxdRecord {
 
     @Override
     public long calculateRecordSize() {
-        return super.calculateRecordSize() + getPerceivedVehicles().size() * 50L; // each perceived vehicle will require around 50 Bytes
+        return super.calculateRecordSize()
+                + (getPerceivedVehicles() != null ? getPerceivedVehicles().size() * 50L : 0); // each perceived vehicle will require around 50 Bytes
     }
 
     public static class Builder extends AbstractRecordBuilder<Builder, FcdRecord> {
