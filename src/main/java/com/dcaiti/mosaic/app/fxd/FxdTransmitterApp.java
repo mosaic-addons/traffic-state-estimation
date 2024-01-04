@@ -97,7 +97,6 @@ public abstract class FxdTransmitterApp<
     private void handleRecordCollection(@Nonnull VehicleData updatedVehicleData, long currentTime) {
         if (recordBuffer.isEmpty() || currentTime - recordBuffer.lastKey() >= config.collectionInterval) {
             RecordT record = prebuildRecord(updatedVehicleData)
-                    .withOffset(calcOffsetBasedOnDistanceDriven(updatedVehicleData))
                     .withSpeed(updatedVehicleData.getSpeed())
                     .withHeading(updatedVehicleData.getHeading())
                     .build();

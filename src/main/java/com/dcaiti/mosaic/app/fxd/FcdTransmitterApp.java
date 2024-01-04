@@ -69,7 +69,8 @@ public class FcdTransmitterApp extends FxdTransmitterApp<CFcdTransmitterApp, Fcd
     @Override
     protected FcdRecord.Builder prebuildRecord(VehicleData vehicleData) {
         FcdRecord.Builder builder =
-                new FcdRecord.Builder(vehicleData.getTime(), vehicleData.getPosition(), getOs().getRoadPosition().getConnectionId());
+                new FcdRecord.Builder(vehicleData.getTime(), vehicleData.getPosition(), getOs().getRoadPosition().getConnectionId())
+                        .withOffset(calcOffsetBasedOnDistanceDriven(vehicleData));
         if (config.includePerceptionData) {
             builder.withPerceivedVehicles(getOs().getPerceptionModule().getPerceivedVehicles());
         }
