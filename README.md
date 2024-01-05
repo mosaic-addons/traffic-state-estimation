@@ -131,11 +131,15 @@ which are used to configure the vehicles and the server respectively.
 *TseServerApp.json*
 ```json
 {
+      "fcdDataStorage": {
+        "type": "FcdDatabaseHelper",
+        "inMemory": false
+    },
     "storeRawFcd": false,
     "databasePath": null,
     "databaseFileName": null,
-    "garbageCollectionInterval" : "60min",
-    "garbageLifeTime" : "30min",
+    "unitRemovalInterval" : "60min",
+    "unitExpirationTime" : "30min",
     "traversalBasedProcessors": [
         {
             "type": "SpatioTemporalProcessor",
