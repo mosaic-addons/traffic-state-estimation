@@ -6,6 +6,7 @@
     "storeRawFcd": false,
     "databasePath": null,
     "databaseFileName": null,
+    "isPersistent": false,
     "unitRemovalInterval" : "60min",
     "unitExpirationTime" : "30min",
     "traversalBasedProcessors": [

@@ -138,6 +138,7 @@ which are used to configure the vehicles and the server respectively.
     "storeRawFcd": false,
     "databasePath": null,
     "databaseFileName": null,
+    "isPersistent": false,
     "unitRemovalInterval" : "60min",
     "unitExpirationTime" : "30min",
     "traversalBasedProcessors": [

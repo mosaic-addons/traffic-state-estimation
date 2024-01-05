@@ -58,6 +58,7 @@ public class TseKernel extends FxdKernel<FcdRecord, FcdTraversal, FcdUpdateMessa
     @Override
     protected void additionalProcessingOfUpdate(FcdUpdateMessage update) {
         if (config.storeRawFcd) {
+            // FIXME: this slows down execution immensely when not using in-memory database due to many write actions. A buffer would help!
             fcdDataStorage.insertFcdRecords(update.getRouting().getSource().getSourceName(), update.getRecords().values());
         }
     }
