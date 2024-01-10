@@ -63,11 +63,6 @@ public class CTseServerApp extends CFxdReceiverApp<FcdRecord, FcdTraversal, FcdU
      * Optional path to the db file. If there is none, one will be created.
      */
     public String databaseFileName = null;
-    /**
-     * If {@code true}, all {@link FcdRecord FcdRecords} will be stored to the database.
-     * Can be turned off, to safe storage and compute time, as metrics are computed from memory, not from records in the database.
-     */
-    public boolean storeRawFcd = false;
 
     @Override
     public String toString() {

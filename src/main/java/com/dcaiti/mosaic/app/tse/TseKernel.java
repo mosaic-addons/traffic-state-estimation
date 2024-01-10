@@ -57,9 +57,6 @@ public class TseKernel extends FxdKernel<FcdRecord, FcdTraversal, FcdUpdateMessa
 
     @Override
     protected void additionalProcessingOfUpdate(FcdUpdateMessage update) {
-        if (config.storeRawFcd) {
-            fcdDataStorage.insertFcdRecords(update.getRouting().getSource().getSourceName(), update.getRecords().values());
-        }
     }
 
     @Override

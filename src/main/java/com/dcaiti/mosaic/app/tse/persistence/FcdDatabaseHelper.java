@@ -247,13 +247,12 @@ public class FcdDatabaseHelper implements FcdDataStorage {
     }
 
     /**
-     * Inserts raw unprocessed fcd records that were received into the database.
+     * This method allows to write records of many units with one sql batch statement.
      *
-     * @param vehicleId id of the vehicle
-     * @param records   records to be inserted
+     * @param records a map containing the vehicleId is key and it's corresponding records as value
      */
     @Override
-    public void insertFcdRecords(String vehicleId, Collection<FcdRecord> records) {
+    public void insertFcdRecords(Map<String, Collection<FcdRecord>> records) {
         String sqlRecordInsert = "REPLACE INTO " + TABLE_RECORDS + "("
                 + COLUMN_VEH_ID + ","
                 + COLUMN_TIME_STAMP + ","
@@ -267,19 +266,21 @@ public class FcdDatabaseHelper implements FcdDataStorage {
         try (PreparedStatement statement = connection.prepareStatement(sqlRecordInsert)) {
             connection.setAutoCommit(false);
             int i = 0;
-            for (FcdRecord record : records) {
-                statement.setString(1, vehicleId);
-                statement.setLong(2, record.getTimeStamp());
-                statement.setDouble(3, record.getPosition().getLatitude());
-                statement.setDouble(4, record.getPosition().getLongitude());
-                statement.setString(5, record.getConnectionId());
-                statement.setDouble(6, record.getOffset());
-                statement.setDouble(7, record.getSpeed());
-                statement.addBatch();
-                i++;
-                if (i % 1000 == 0 || i == records.size()) {
-                    statement.executeBatch();
-                    connection.commit();
+            for (String vehicleId : records.keySet()) {
+                for (FcdRecord record : records.get(vehicleId)) {
+                    statement.setString(1, vehicleId);
+                    statement.setLong(2, record.getTimeStamp());
+                    statement.setDouble(3, record.getPosition().getLatitude());
+                    statement.setDouble(4, record.getPosition().getLongitude());
+                    statement.setString(5, record.getConnectionId());
+                    statement.setDouble(6, record.getOffset());
+                    statement.setDouble(7, record.getSpeed());
+                    statement.addBatch();
+                    i++;
+                    if (i % 1000 == 0 || i == records.size()) {
+                        statement.executeBatch();
+                        connection.commit();
+                    }
                 }
             }
             statement.executeBatch();
