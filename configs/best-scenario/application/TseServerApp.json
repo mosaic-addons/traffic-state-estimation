@@ -3,7 +3,6 @@
         "type": "FcdDatabaseHelper",
         "inMemory": false
     },
-    "storeRawFcd": false,
     "databasePath": null,
     "databaseFileName": null,
     "isPersistent": false,
@@ -22,6 +21,10 @@
             "defaultRedLightDuration": "45s",
             "minTraversalsForThreshold": 10,
             "recomputeAllRtsmWithNewThreshold": false
+        },
+        {
+            "type": "FcdWriterProcessor",
+            "triggerInterval": -1
         }
     ]
 }
