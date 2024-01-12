@@ -266,9 +266,9 @@ public class FcdDatabaseHelper implements FcdDataStorage {
         try (PreparedStatement statement = connection.prepareStatement(sqlRecordInsert)) {
             connection.setAutoCommit(false);
             int i = 0;
-            for (String vehicleId : records.keySet()) {
-                for (FcdRecord record : records.get(vehicleId)) {
-                    statement.setString(1, vehicleId);
+            for (Map.Entry<String, Collection<FcdRecord>> recordEntry : records.entrySet()) {
+                for (FcdRecord record : recordEntry.getValue()) {
+                    statement.setString(1, recordEntry.getKey());
                     statement.setLong(2, record.getTimeStamp());
                     statement.setDouble(3, record.getPosition().getLatitude());
                     statement.setDouble(4, record.getPosition().getLongitude());
@@ -277,12 +277,13 @@ public class FcdDatabaseHelper implements FcdDataStorage {
                     statement.setDouble(7, record.getSpeed());
                     statement.addBatch();
                     i++;
-                    if (i % 1000 == 0 || i == records.size()) {
+                    if (i % 1000 == 0) { // make sure the batch statement is executed every 1000 entries
                         statement.executeBatch();
                         connection.commit();
                     }
                 }
             }
+            // finalize statement by executing non-committed statements
             statement.executeBatch();
             connection.commit();
             connection.setAutoCommit(true);
