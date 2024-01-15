@@ -1,9 +1,13 @@
 {
-    "storeRawFcd": false,
+    "fcdDataStorage": {
+        "type": "FcdDatabaseHelper",
+        "inMemory": false
+    },
     "databasePath": null,
     "databaseFileName": null,
-    "garbageCollectionInterval" : "60min",
-    "garbageLifeTime" : "30min",
+    "isPersistent": false,
+    "unitRemovalInterval" : "60min",
+    "unitExpirationTime" : "30min",
     "traversalBasedProcessors": [
         {
             "type": "SpatioTemporalProcessor",
@@ -17,6 +21,10 @@
             "defaultRedLightDuration": "45s",
             "minTraversalsForThreshold": 10,
             "recomputeAllRtsmWithNewThreshold": false
+        },
+        {
+            "type": "FcdWriterProcessor",
+            "triggerInterval": -1
         }
     ]
 }

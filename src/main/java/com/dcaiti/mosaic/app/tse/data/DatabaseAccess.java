@@ -29,7 +29,7 @@ public interface DatabaseAccess {
      * Method giving processors access to the {@link Database Network Database} and the {@link FcdDataStorage}.
      *
      * @param networkDatabase   reference to the {@link Database Network Database}
-     * @param fcdDatabaseHelper reference to the {@link FcdDataStorage}
+     * @param fcdDataStorage reference to the {@link FcdDataStorage}
      */
-    void withDataStorage(Database networkDatabase, FcdDataStorage fcdDatabaseHelper);
+    void withDataStorage(Database networkDatabase, FcdDataStorage fcdDataStorage);
 }
