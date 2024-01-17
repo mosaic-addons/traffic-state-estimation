@@ -177,5 +177,10 @@ To achieve this, you can add the `FcdWriterProcessor` to your list of `timeBased
 Within the **evaluation** directory, we bundled python scripts for reading and preprocessing simulation data.
 The [**usage_example**](evaluation/notebooks/usage_example.ipynb) Jupyter Notebook should explain the usage of the methods.
 
+You can install required dependencies by generating a virtual environment and calling the following command:
+```shell
+python -m pip install -r requirements.txt
+```
+
 [^1]: Yoon, Jungkeun; Noble, Brian; Liu, Mingyan. *Surface street traffic estimation*. In: Proceedings of the 5th international conference on Mobile systems, applications and services. 2007. S. 220-232
 [^2]: Schrab, K., Protzmann, R., Radusch, I. (2023). *A Large-Scale Traffic Scenario of Berlin for Evaluating Smart Mobility Applications*. In: Nathanail, E.G., Gavanas, N., Adamos, G. (eds) Smart Energy for Smart Transport. CSUM 2022. Lecture Notes in Intelligent Transportation and Infrastructure. Springer, Cham. https://doi.org/10.1007/978-3-031-23721-8_24
