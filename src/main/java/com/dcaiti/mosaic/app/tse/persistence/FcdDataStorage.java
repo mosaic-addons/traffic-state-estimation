@@ -49,7 +49,7 @@ public interface FcdDataStorage {
 
     String getStatisticsString();
 
-    void insertFcdRecords(String vehicleId, Collection<FcdRecord> records);
+    void insertFcdRecords(Map<String, Collection<FcdRecord>> records);
 
     void insertTraversalMetrics(String vehicleId, long timestamp, String connectionId, String nextConnection,
                                 double spatialMeanSpeed, double temporalMeanSpeed, double naiveMeanSpeed,
