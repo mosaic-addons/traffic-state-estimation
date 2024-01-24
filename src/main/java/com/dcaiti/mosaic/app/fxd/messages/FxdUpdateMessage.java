@@ -23,6 +23,7 @@ import org.eclipse.mosaic.lib.objects.v2x.V2xMessage;
 import com.google.common.collect.Maps;
 
 import java.util.SortedMap;
+import java.util.TreeMap;
 import javax.annotation.Nonnull;
 
 /**
@@ -50,7 +51,7 @@ public abstract class FxdUpdateMessage<RecordT extends FxdRecord> extends V2xMes
 
     public final SortedMap<Long, RecordT> getRecords() {
         // always return copy of records, in case list is processed by multiple processors
-        return Maps.newTreeMap(records);
+        return records == null ? new TreeMap<>() : Maps.newTreeMap(records);
     }
 
     public boolean isFinal() {
@@ -59,13 +60,13 @@ public abstract class FxdUpdateMessage<RecordT extends FxdRecord> extends V2xMes
 
     @Nonnull
     @Override
-    public EncodedPayload getPayLoad() {
+    public EncodedPayload getPayload() {
         return new EncodedPayload(calculateMessageLength());
     }
 
     /**
-     * Method that estimates the length of an average {@link FxdUpdateMessage UpdateMessage} adding the baseline length of required fields with
-     * the length of the specialized {@link FxdUpdateMessage FxdUpdateMessages}.
+     * Method that estimates the length of an average {@link FxdUpdateMessage UpdateMessage} adding the baseline length of
+     * required fields with the length of the specialized {@link FxdUpdateMessage UpdateMessages}.
      */
     public long calculateMessageLength() {
         return 10 // "header size"
