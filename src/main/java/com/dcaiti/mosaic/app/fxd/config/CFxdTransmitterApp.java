@@ -45,10 +45,7 @@ public class CFxdTransmitterApp {
     @JsonAdapter(TimeFieldAdapter.NanoSeconds.class)
     public Long transmissionInterval = 30 * TIME.SECOND;
 
-    /**
-     * Enables a random time offset for every FtdUpdate between 0 and transmissionInterval. Default: false
-     */
-    public boolean doOffsetTransmission = false;
+
 
     @Override
     public String toString() {
