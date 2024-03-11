@@ -20,7 +20,10 @@ import static org.apache.commons.lang3.builder.ToStringStyle.SHORT_PREFIX_STYLE;
 import org.eclipse.mosaic.lib.util.gson.TimeFieldAdapter;
 import org.eclipse.mosaic.rti.TIME;
 
+import com.google.gson.TypeAdapter;
 import com.google.gson.annotations.JsonAdapter;
+import com.google.gson.internal.Primitives;
+import com.google.gson.internal.bind.TypeAdapters;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
 public class CFxdTransmitterApp {
@@ -41,6 +44,11 @@ public class CFxdTransmitterApp {
      */
     @JsonAdapter(TimeFieldAdapter.NanoSeconds.class)
     public Long transmissionInterval = 30 * TIME.SECOND;
+
+    /**
+     * Enables a random time offset for every FtdUpdate between 0 and transmissionInterval. Default: false
+     */
+    public boolean doOffsetTransmission = false;
 
     @Override
     public String toString() {

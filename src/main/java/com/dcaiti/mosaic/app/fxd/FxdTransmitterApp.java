@@ -120,7 +120,7 @@ public abstract class FxdTransmitterApp<
         return getOs().getCellModule().createMessageRouting().topoCast(config.receiverId);
     }
 
-    private void transmitUpdate(UpdateT fxdUpdate) {
+    protected void transmitUpdate(UpdateT fxdUpdate) {
         getOs().getCellModule().sendV2xMessage(fxdUpdate);
     }
 
