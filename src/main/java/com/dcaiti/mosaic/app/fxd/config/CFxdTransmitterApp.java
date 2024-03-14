@@ -41,7 +41,7 @@ public class CFxdTransmitterApp {
      */
     @JsonAdapter(TimeFieldAdapter.NanoSeconds.class)
     public Long transmissionInterval = 30 * TIME.SECOND;
-    
+
     @Override
     public String toString() {
         return new ToStringBuilder(this, SHORT_PREFIX_STYLE)
