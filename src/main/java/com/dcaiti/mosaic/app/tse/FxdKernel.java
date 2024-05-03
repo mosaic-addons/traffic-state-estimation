@@ -109,9 +109,9 @@ public abstract class FxdKernel<
             this.traversalBasedProcessors.addAll(config.traversalBasedProcessors);
         }
         if (config.timeBasedProcessors != null) {
-            // create registry of time based processors
+            // create registry of time-based processors
             config.timeBasedProcessors.forEach(processor -> {
-                if (processor.triggerInterval >= 0) { // validate that processor has a legal trigger interval
+                if (processor != null && processor.triggerInterval >= 0) { // validate that processor has a legal trigger interval
                     this.timeBasedProcessors.put(processor.getIdentifier(), processor);
                 }
             });
