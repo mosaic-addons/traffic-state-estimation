@@ -176,16 +176,17 @@ public abstract class FxdKernel<
      */
     private List<String> extractTraversedConnections(String senderId, SortedMap<Long, RecordT> records) {
         if (!connectionsBuffer.containsKey(senderId)) { // on first record of a vehicle add it
-            RecordT firstRecord = records.get(records.firstKey());
-            connectionsBuffer.put(senderId, Lists.newArrayList(firstRecord.getConnectionId()));
+            connectionsBuffer.put(senderId, Lists.newArrayList());
         }
         // scan records for all traversed connections
         List<String> senderConnections = connectionsBuffer.get(senderId);
-        records.values().forEach(record -> {
-            if (!senderConnections.contains(record.getConnectionId())) {
-                senderConnections.add(record.getConnectionId());
+        String prevConnection = senderConnections.isEmpty() ? null : senderConnections.get(senderConnections.size() - 1);
+        for (RecordT currentRecord : records.values()) {
+            if (!currentRecord.getConnectionId().equals(prevConnection)) {
+                senderConnections.add(currentRecord.getConnectionId());
+                prevConnection = currentRecord.getConnectionId();
             }
-        });
+        }
         return senderConnections;
     }
 
