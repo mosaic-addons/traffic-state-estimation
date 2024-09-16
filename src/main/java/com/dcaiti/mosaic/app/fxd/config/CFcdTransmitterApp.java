@@ -42,6 +42,10 @@ public class CFcdTransmitterApp extends CFxdTransmitterApp {
      * Flag indicating whether wall occlusion should be enabled.
      */
     public boolean enableWallOcclusion = false;
+    /**
+     * Flag indicating whether vehicles will occlude other vehicles using a bounding box-based occlusion evaluation.
+     */
+    public boolean enableVehicleOcclusion = false;
 
     @Override
     public String toString() {
@@ -51,6 +55,7 @@ public class CFcdTransmitterApp extends CFxdTransmitterApp {
                 .append("viewingRange", viewingRange)
                 .append("viewingAngle", viewingAngle)
                 .append("enableWallOcclusion", enableWallOcclusion)
+                .append("enableVehicleOcclusion", enableVehicleOcclusion)
                 .toString();
     }
 }
