@@ -22,6 +22,7 @@ import org.eclipse.mosaic.lib.objects.v2x.MessageRouting;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
+import java.io.Serial;
 import java.util.SortedMap;
 
 /**
@@ -29,6 +30,7 @@ import java.util.SortedMap;
  */
 public class FcdUpdateMessage extends FxdUpdateMessage<FcdRecord> {
 
+    @Serial
     private static final long serialVersionUID = 1L;
 
     /**

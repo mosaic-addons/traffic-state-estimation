@@ -1,0 +1,31 @@
+{
+    "simulation": {
+        "id": "charlottenburg_best",
+        "duration": "24h",
+        "randomSeed": 0,
+        "projection": {
+            "centerCoordinates": {
+                "latitude": 52.502147,
+                "longitude": 13.4224565
+            },
+            "cartesianOffset": {
+                "x": -369461.94,
+                "y": -5798955.14
+            }
+        },
+        "network": {
+            "netMask": "255.0.0.0",
+            "vehicleNet": "10.0.0.0",
+            "rsuNet": "11.0.0.0",
+            "tlNet": "12.0.0.0",
+            "csNet": "13.0.0.0",
+            "serverNet": "14.0.0.0",
+            "tmcNet": "15.0.0.0"
+        }
+    },
+    "federates": {
+        "application": true,
+        "cell": true,
+        "sumo": true
+    }
+}
