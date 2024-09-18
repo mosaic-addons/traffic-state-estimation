@@ -74,18 +74,16 @@ public final class SpatioTemporalTrafficMetric {
     private static double getDistanceBasedMetric(Double temporalMeanSpeed, Double spatialMeanSpeed, Pair<Double, Double> thresholds) {
 
         RtsmQuadrant quadrant = getQuadrant(temporalMeanSpeed, spatialMeanSpeed, thresholds);
-        switch (quadrant) {
-            case UpperRight:
-                return 0;
-            case UpperLeft:
-                return (thresholds.getFirst() - temporalMeanSpeed);
-            case LowerLeft:
-                return (thresholds.getFirst() - temporalMeanSpeed) + (thresholds.getSecond() - spatialMeanSpeed);
-            case LowerRight:
-                return (thresholds.getSecond() - spatialMeanSpeed);
-            default:
-                return -1;
-        }
+        return switch (quadrant) {
+            case UpperRight ->
+                    0;
+            case UpperLeft ->
+                    (thresholds.getFirst() - temporalMeanSpeed);
+            case LowerLeft ->
+                    (thresholds.getFirst() - temporalMeanSpeed) + (thresholds.getSecond() - spatialMeanSpeed);
+            case LowerRight ->
+                    (thresholds.getSecond() - spatialMeanSpeed);
+        };
     }
 
     /**

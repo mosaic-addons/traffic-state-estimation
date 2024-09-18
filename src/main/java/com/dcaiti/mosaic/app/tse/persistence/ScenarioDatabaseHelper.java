@@ -38,8 +38,8 @@ public final class ScenarioDatabaseHelper {
      * @return The Mosaic Database.
      */
     public static Database getNetworkDbFromFile(OperatingSystem os) {
-        if (SimulationKernel.SimulationKernel.getCentralNavigationComponent().getRouting() instanceof DatabaseRouting) {
-            return ((DatabaseRouting) SimulationKernel.SimulationKernel.getCentralNavigationComponent().getRouting()).getScenarioDatabase();
+        if (SimulationKernel.SimulationKernel.getCentralNavigationComponent().getRouting() instanceof DatabaseRouting databaseRouting) {
+            return databaseRouting.getScenarioDatabase();
         }
         File[] dbFiles = os.getConfigurationPath().listFiles((f, n) -> n.endsWith(".db") || n.endsWith(".sqlite"));
         if (dbFiles != null && dbFiles.length > 0) {
