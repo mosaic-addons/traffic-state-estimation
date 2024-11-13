@@ -117,7 +117,7 @@ public abstract class FxdTransmitterApp<
     }
 
     protected MessageRouting getMessageRouting() {
-        return getOs().getCellModule().createMessageRouting().topoCast(config.receiverId);
+        return getOs().getCellModule().createMessageRouting().destination(config.receiverId).topological().build();
     }
 
     protected void transmitUpdate(UpdateT fxdUpdate) {
