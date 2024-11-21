@@ -58,6 +58,7 @@ public class TseServerApp
 
 
     /**
+     * Initialization method.
      * Initializes the {@link TseKernel} by
      * <ul>
      *  <li>validating that processors for minimal function are configured,</li>

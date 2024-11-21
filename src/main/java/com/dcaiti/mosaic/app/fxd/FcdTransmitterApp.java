@@ -19,6 +19,7 @@ import com.dcaiti.mosaic.app.fxd.config.CFcdTransmitterApp;
 import com.dcaiti.mosaic.app.fxd.data.FcdRecord;
 import com.dcaiti.mosaic.app.fxd.messages.FcdUpdateMessage;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.SimplePerceptionConfiguration;
+import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.errormodels.BoundingBoxOcclusion;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.errormodels.WallOcclusion;
 import org.eclipse.mosaic.lib.objects.v2x.MessageRouting;
 import org.eclipse.mosaic.lib.objects.vehicle.VehicleData;
@@ -44,6 +45,9 @@ public class FcdTransmitterApp extends FxdTransmitterApp<CFcdTransmitterApp, Fcd
                     = new SimplePerceptionConfiguration.Builder(config.viewingAngle, config.viewingRange);
             if (config.enableWallOcclusion) {
                 perceptionConfigBuilder.addModifier(new WallOcclusion());
+            }
+            if (config.enableVehicleOcclusion) {
+                perceptionConfigBuilder.addModifier(new BoundingBoxOcclusion());
             }
             getOs().getPerceptionModule().enable(perceptionConfigBuilder.build());
             getLog().debugSimTime(this, "Perception Module enabled.");
