@@ -89,7 +89,10 @@ public abstract class FxdReceiverApp<
             kernel.processUpdate(update);
         } else { // forward message to kernel to potentially be handled by message-based processors
             MessageRouting responseRouting =
-                    getOs().getCellModule().createMessageRouting().topoCast(message.getRouting().getSource().getSourceName());
+                    getOs().getCellModule().createMessageRouting()
+                            .destination(message.getRouting().getSource().getSourceName())
+                            .topological()
+                            .build();
             kernel.handleMessageAdvanced(receivedV2xMessage, responseRouting) // get all responses
                     .forEach(response -> getOs().getCellModule().sendV2xMessage(response)); // send all responses
         }
