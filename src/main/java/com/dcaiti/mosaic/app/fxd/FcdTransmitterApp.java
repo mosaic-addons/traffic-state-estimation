@@ -47,7 +47,7 @@ public class FcdTransmitterApp extends FxdTransmitterApp<CFcdTransmitterApp, Fcd
                 perceptionConfigBuilder.addModifier(new WallOcclusion());
             }
             if (config.enableVehicleOcclusion) {
-                perceptionConfigBuilder.addModifier(new BoundingBoxOcclusion());
+                perceptionConfigBuilder.addModifier(new BoundingBoxOcclusion(3, 4));
             }
             getOs().getPerceptionModule().enable(perceptionConfigBuilder.build());
             getLog().debugSimTime(this, "Perception Module enabled.");
