@@ -48,8 +48,7 @@ public class TseKernel extends FxdKernel<FcdRecord, FcdTraversal, FcdUpdateMessa
         super(eventManager, logger, config);
         this.fcdDataStorage = fcdDataStorage;
         for (FxdProcessor processor : allProcessors) {
-            if (processor instanceof DatabaseAccess) {
-                DatabaseAccess databaseAccess = (DatabaseAccess) processor;
+            if (processor instanceof DatabaseAccess databaseAccess) {
                 databaseAccess.withDataStorage(networkDatabase, fcdDataStorage);
             }
         }

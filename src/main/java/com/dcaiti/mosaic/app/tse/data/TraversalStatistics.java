@@ -88,8 +88,8 @@ public class TraversalStatistics {
     /**
      * Constructor for setting all metrics for aggregated traversal data of a single connection.
      */
-    public TraversalStatistics(String connectionId, Long timestamp, Integer samples, Double temporalMeanSpeed,
-                               Double spatialMeanSpeed, Double naiveMeanSpeed, Float relativeTrafficStatusMetric, Double speedPerformanceIndex) {
+    public TraversalStatistics(String connectionId, Long timestamp, Integer samples, Double temporalMeanSpeed, Double spatialMeanSpeed,
+                               Double naiveMeanSpeed, Float relativeTrafficStatusMetric, Double speedPerformanceIndex) {
         this.connectionId = connectionId;
         this.samples = samples;
         this.timestamp = timestamp;

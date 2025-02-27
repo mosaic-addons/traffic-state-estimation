@@ -39,7 +39,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.SortedMap;
-import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 
 /**
@@ -64,13 +63,13 @@ public abstract class FxdKernel<
     private final EventManager eventManager;
     protected final UnitLogger logger;
     /**
-     * Field holding the configuration to
+     * Field holding the configuration.
      * See: {@link CFxdReceiverApp}
      */
     protected final ConfigT config;
     /**
      * A Map containing all known senders and all received records, that haven't been processed yet.
-     * The value of this map is as {@link SortedMap}, which uses the time of record creation as key, which allows for easy
+     * The value of this map is as {@link SortedMap}, which uses the time of record creation as the key, which allows for easy
      * garbage collection.
      */
     private final Map<String, SortedMap<Long, RecordT>> recordBuffer = new HashMap<>();
@@ -233,8 +232,7 @@ public abstract class FxdKernel<
             triggerExpiredUnitRemoval(oldestAllowedRecordTime);
         } else {
             Object resource = event.getResource();
-            if (resource instanceof String) {
-                String processorName = (String) resource;
+            if (resource instanceof String processorName) {
                 if (timeBasedProcessors.containsKey(processorName)) {
                     TimeBasedProcessor<RecordT, UpdateT> processor = timeBasedProcessors.get(processorName);
                     processor.triggerEvent(event.getTime());
@@ -288,7 +286,7 @@ public abstract class FxdKernel<
         List<V2xMessage> responses = new ArrayList<>();
         List<MessageBasedProcessor> handlingProcessors = messageBasedProcessors.stream()
                 .filter(processor -> processor.isInstanceOfMessage(receivedV2xMessage))
-                .collect(Collectors.toList());
+                .toList();
         if (handlingProcessors.isEmpty()) { // check if message can be handled by any processors
             logger.debug("No Processor found to handle message of type {}", receivedV2xMessage.getMessage().getClass());
         }
