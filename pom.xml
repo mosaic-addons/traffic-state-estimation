@@ -6,7 +6,7 @@
 
     <groupId>com.dcaiti.mosaic.app</groupId>
     <artifactId>traffic-state-estimation</artifactId>
-    <version>25.0</version>
+    <version>25.1-SNAPSHOT</version>
     <packaging>jar</packaging>
 
     <name>Traffic State Estimation Applications for Eclipse MOSAIC</name>
