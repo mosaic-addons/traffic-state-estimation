@@ -17,8 +17,8 @@ package com.dcaiti.mosaic.app.fxd.data;
 
 import static org.apache.commons.lang3.builder.ToStringStyle.SHORT_PREFIX_STYLE;
 
-import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.index.objects.VehicleObject;
 import org.eclipse.mosaic.lib.geo.GeoPoint;
+import org.eclipse.mosaic.lib.perception.objects.VehicleObject;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
