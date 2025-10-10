@@ -18,11 +18,11 @@ package com.dcaiti.mosaic.app.fxd;
 import com.dcaiti.mosaic.app.fxd.config.CFcdTransmitterApp;
 import com.dcaiti.mosaic.app.fxd.data.FcdRecord;
 import com.dcaiti.mosaic.app.fxd.messages.FcdUpdateMessage;
-import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.SimplePerceptionConfiguration;
-import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.errormodels.BoundingBoxOcclusion;
-import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.errormodels.WallOcclusion;
 import org.eclipse.mosaic.lib.objects.v2x.MessageRouting;
 import org.eclipse.mosaic.lib.objects.vehicle.VehicleData;
+import org.eclipse.mosaic.lib.perception.PerceptionConfiguration;
+import org.eclipse.mosaic.lib.perception.modifier.BoundingBoxOcclusion;
+import org.eclipse.mosaic.lib.perception.modifier.WallOcclusion;
 
 /**
  * An extension of {@link FxdTransmitterApp}, adding functionality for including perception data.
@@ -41,8 +41,8 @@ public class FcdTransmitterApp extends FxdTransmitterApp<CFcdTransmitterApp, Fcd
     public void onStartup() {
         super.onStartup();
         if (config.includePerceptionData) {
-            SimplePerceptionConfiguration.Builder perceptionConfigBuilder
-                    = new SimplePerceptionConfiguration.Builder(config.viewingAngle, config.viewingRange);
+            PerceptionConfiguration.Builder perceptionConfigBuilder
+                    = new PerceptionConfiguration.Builder(config.viewingAngle, config.viewingRange);
             if (config.enableWallOcclusion) {
                 perceptionConfigBuilder.addModifier(new WallOcclusion());
             }
