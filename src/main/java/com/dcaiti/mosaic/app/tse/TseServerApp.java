@@ -21,9 +21,11 @@ import com.dcaiti.mosaic.app.fxd.messages.FcdUpdateMessage;
 import com.dcaiti.mosaic.app.tse.config.CTseServerApp;
 import com.dcaiti.mosaic.app.tse.persistence.FcdDataStorage;
 import com.dcaiti.mosaic.app.tse.persistence.FcdDatabaseHelper;
+import com.dcaiti.mosaic.app.tse.persistence.FcdParquetStorage;
 import com.dcaiti.mosaic.app.tse.persistence.ScenarioDatabaseHelper;
 import com.dcaiti.mosaic.app.tse.processors.SpatioTemporalProcessor;
 import com.dcaiti.mosaic.app.tse.processors.ThresholdProcessor;
+import org.eclipse.mosaic.fed.application.ambassador.SimulationKernel;
 import org.eclipse.mosaic.lib.database.Database;
 import org.eclipse.mosaic.lib.objects.v2x.V2xMessage;
 import org.eclipse.mosaic.lib.util.scheduling.EventManager;
@@ -74,12 +76,34 @@ public class TseServerApp
     protected TseKernel initKernel(EventManager eventManager, CTseServerApp config) {
         addRequiredProcessors(config);
         Database networkDatabase = ScenarioDatabaseHelper.getNetworkDbFromFile(getOs());
-        String databaseDirectory = config.databasePath == null ? getOs().getConfigurationPath().getPath() : getConfiguration().databasePath;
-        String databaseFileName = getConfiguration().databaseFileName == null ? "FcdData.sqlite" : getConfiguration().databaseFileName;
-        Path databasePath = Paths.get(databaseDirectory, databaseFileName);
-        // set data storage to configured type else use default FcdDatabaseHelper
-        fcdDataStorage = config.fcdDataStorage == null ? new FcdDatabaseHelper() : config.fcdDataStorage;
-        fcdDataStorage.initialize(databasePath, networkDatabase, config.isPersistent, getLog());
+        
+        // Set data storage to configured type else use default FcdParquetStorage
+        fcdDataStorage = config.fcdDataStorage == null ? new FcdParquetStorage() : config.fcdDataStorage;
+        
+        // Determine output path based on storage type
+        Path outputPath;
+        if (fcdDataStorage instanceof FcdDatabaseHelper) {
+            // Legacy SQLite mode: combine directory and filename
+            String databaseDirectory = config.databasePath == null
+                ? SimulationKernel.SimulationKernel.getMainLogDirectory().toString()
+                : config.databasePath;
+            String databaseFileName = config.databaseFileName == null 
+                ? "FcdData.sqlite" 
+                : config.databaseFileName;
+            outputPath = Paths.get(databaseDirectory, databaseFileName);
+        } else {
+            // Parquet mode: use directory only, or null to use log directory
+            if (config.parquetOutputPath != null) {
+                outputPath = Paths.get(config.parquetOutputPath);
+            } else {
+                // Use null to trigger ParquetFileManager to use SimulationKernel log directory
+                outputPath = SimulationKernel.SimulationKernel.getMainLogDirectory()
+                        .resolve("parquet-output")
+                        .toAbsolutePath();
+            }
+        }
+
+        fcdDataStorage.initialize(outputPath, networkDatabase, config.isPersistent, getLog());
         return new TseKernel(eventManager, getLog(), config, fcdDataStorage, networkDatabase);
     }
 

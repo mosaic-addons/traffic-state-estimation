@@ -41,7 +41,12 @@ import java.util.Map;
 
 /**
  * Helper class to connect to FcdDatabase and perform queries.
+ * 
+ * @deprecated This class is deprecated in favor of {@link FcdParquetStorage} which outputs
+ *             data in Parquet/GeoParquet format instead of SQLite. SQLite support may be
+ *             removed in future versions. Use FcdParquetStorage for new projects.
  */
+@Deprecated
 public class FcdDatabaseHelper implements FcdDataStorage {
     // DB strings
     private static final String TABLE_RECORDS = "fcd_records";

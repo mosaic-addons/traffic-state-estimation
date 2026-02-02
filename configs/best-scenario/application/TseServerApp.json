@@ -1,10 +1,8 @@
 {
     "fcdDataStorage": {
-        "type": "FcdDatabaseHelper",
-        "inMemory": false
+        "type": "FcdParquetStorage"
     },
-    "databasePath": null,
-    "databaseFileName": null,
+    "parquetOutputPath": null,
     "isPersistent": false,
     "unitRemovalInterval" : "60min",
     "unitExpirationTime" : "30min",

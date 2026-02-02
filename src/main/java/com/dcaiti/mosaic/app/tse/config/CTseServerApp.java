@@ -38,7 +38,7 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 
 /**
  * An extension of {@link CFxdReceiverApp}, holding the configuration of the {@link TseServerApp},
- * which manly includes configuration parameters for the database.
+ * which mainly includes configuration parameters for data storage (Parquet output).
  * Additionally, the {@link TypeAdapterFactory TypeAdapterFactories} for the relevant
  * {@link com.dcaiti.mosaic.app.tse.processors.FxdProcessor processors} is added.
  */
@@ -50,18 +50,24 @@ public class CTseServerApp extends CFxdReceiverApp<FcdRecord, FcdTraversal, FcdU
      */
     public FcdDataStorage fcdDataStorage = null;
     /**
-     * Set to {@code true}, if the database should be kept and not reset before every simulation.
-     * Can be useful to be used as a threshold from a prior long simulation in a shorter new simulation on the same network.
+     * Set to {@code true}, if data should be kept and not reset before every simulation.
+     * Note: For Parquet storage, this is currently not implemented (files will be overwritten).
      */
     public boolean isPersistent = false;
     /**
-     * Optional path to the database file. If no path is configured,
-     * the database will be created in the application directory.
+     * Optional path to the Parquet output directory. If no path is configured,
+     * files will be created in the application's log directory.
      */
+    public String parquetOutputPath = null;
+    /**
+     * @deprecated Use {@link #parquetOutputPath} instead. Kept for backward compatibility.
+     */
+    @Deprecated
     public String databasePath = null;
     /**
-     * Optional path to the db file. If there is none, one will be created.
+     * @deprecated No longer used with Parquet storage. Kept for backward compatibility.
      */
+    @Deprecated
     public String databaseFileName = null;
 
     @Override
@@ -69,8 +75,7 @@ public class CTseServerApp extends CFxdReceiverApp<FcdRecord, FcdTraversal, FcdU
         return new ToStringBuilder(this, SHORT_PREFIX_STYLE)
                 .appendSuper(super.toString())
                 .append("isPersistent", isPersistent)
-                .append("databasePath", databasePath)
-                .append("databaseFileName", databaseFileName)
+                .append("parquetOutputPath", parquetOutputPath)
                 .toString();
     }
 
