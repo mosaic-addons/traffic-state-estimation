@@ -16,6 +16,7 @@
 package com.dcaiti.mosaic.app.tse.persistence;
 
 import com.dcaiti.mosaic.app.fxd.data.FcdRecord;
+import com.dcaiti.mosaic.app.tse.data.AggregatedMetricRecord;
 import com.dcaiti.mosaic.app.tse.data.ConnectionRecord;
 import com.dcaiti.mosaic.app.tse.data.IMetricsBuffer;
 import com.dcaiti.mosaic.app.tse.data.ThresholdRecord;
@@ -88,11 +89,27 @@ public class FcdParquetStorage implements FcdDataStorage {
             }
             """);
 
+    private static final Schema AGGREGATED_METRICS_SCHEMA = new Schema.Parser().parse("""
+            {
+              "type": "record",
+              "name": "AggregatedMetric",
+              "fields": [
+                {"name": "connectionID", "type": "string"},
+                {"name": "intervalStart", "type": "long"},
+                {"name": "intervalEnd", "type": "long"},
+                {"name": "avgTemporalMeanSpeed", "type": "double"},
+                {"name": "avgSpatialMeanSpeed", "type": "double"},
+                {"name": "sampleCount", "type": "int"}
+              ]
+            }
+            """);
+
     // Parquet sinks for each output file
     private ParquetSink<FcdGeoParquetSink.FcdRecordWithId> fcdSink;
     private ParquetSink<TraversalMetricRecord> traversalSink;
     private ParquetSink<ThresholdRecord> thresholdSink;
     private ParquetSink<ConnectionRecord> connectionSink;
+    private ParquetSink<AggregatedMetricRecord> aggregatedSink;
 
     // Helper record for traversal metrics with all fields
     private record TraversalMetricRecord(
@@ -118,6 +135,7 @@ public class FcdParquetStorage implements FcdDataStorage {
     private long traversalMetricCount = 0;
     private long thresholdCount = 0;
     private long connectionCount = 0;
+    private long aggregatedMetricCount = 0;
 
     private String outputPath;
     private UnitLogger log;
@@ -142,6 +160,9 @@ public class FcdParquetStorage implements FcdDataStorage {
 
             // Create thresholds sink
             createThresholdSink();
+
+            // Create aggregated metrics sink
+            createAggregatedSink();
 
             // Create connections sink and write connection data
             createConnectionSink(networkDatabase);
@@ -191,6 +212,22 @@ public class FcdParquetStorage implements FcdDataStorage {
 
         thresholdSink = ParquetSinks.avro(THRESHOLD_SCHEMA, config, encoder);
         log.info("Created thresholds Parquet sink");
+    }
+
+    private void createAggregatedSink() {
+        ParquetSinkConfig config = ParquetSinkConfig.of(outputPath, "aggregated_metrics.parquet");
+
+        RecordEncoder<AggregatedMetricRecord, GenericData.Record> encoder = (aggregated, record) -> {
+            record.put("connectionID", aggregated.connectionId());
+            record.put("intervalStart", aggregated.intervalStart());
+            record.put("intervalEnd", aggregated.intervalEnd());
+            record.put("avgTemporalMeanSpeed", aggregated.avgTemporalMeanSpeed());
+            record.put("avgSpatialMeanSpeed", aggregated.avgSpatialMeanSpeed());
+            record.put("sampleCount", aggregated.sampleCount());
+        };
+
+        aggregatedSink = ParquetSinks.avro(AGGREGATED_METRICS_SCHEMA, config, encoder);
+        log.info("Created aggregated metrics Parquet sink");
     }
 
     private void createConnectionSink(Database networkDatabase) {
@@ -387,6 +424,25 @@ public class FcdParquetStorage implements FcdDataStorage {
     }
 
     @Override
+    public void insertAggregatedTraversalMetrics(String connectionId, long intervalStart, long intervalEnd,
+                                                 double avgSpatialMeanSpeed, double avgTemporalMeanSpeed,
+                                                 int sampleCount) {
+        AggregatedMetricRecord record = new AggregatedMetricRecord(
+                connectionId, intervalStart, intervalEnd,
+                avgTemporalMeanSpeed, avgSpatialMeanSpeed, sampleCount
+        );
+
+        try {
+            aggregatedSink.write(record);
+            aggregatedMetricCount++;
+        } catch (IOException e) {
+            log.error("Failed to write aggregated metric for connection {} at interval {}-{}",
+                    connectionId, intervalStart, intervalEnd, e);
+            throw new RuntimeException("Failed to write aggregated metric", e);
+        }
+    }
+
+    @Override
     public Pair<Double, Double> getThresholds(String connectionId) {
         return thresholdCache.get(connectionId);
     }
@@ -502,6 +558,9 @@ public class FcdParquetStorage implements FcdDataStorage {
             if (connectionSink != null) {
                 connectionSink.close();
             }
+            if (aggregatedSink != null) {
+                aggregatedSink.close();
+            }
             log.info("Parquet files written successfully");
             log.info(getStatisticsString());
         } catch (IOException e) {
@@ -514,6 +573,7 @@ public class FcdParquetStorage implements FcdDataStorage {
         String statisticsString = "Statistics for FCD Database:";
         statisticsString += System.lineSeparator() + "Record Amount: " + fcdRecordCount;
         statisticsString += System.lineSeparator() + "Traversal Amount: " + traversalMetricCount;
+        statisticsString += System.lineSeparator() + "Aggregated Metrics Amount: " + aggregatedMetricCount;
         statisticsString += System.lineSeparator() + "Threshold Amount: " + thresholdCount;
         statisticsString += System.lineSeparator() + "Connection Amount: " + connectionCount;
         return statisticsString;

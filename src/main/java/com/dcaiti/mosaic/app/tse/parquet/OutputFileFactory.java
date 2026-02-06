@@ -40,7 +40,10 @@ public final class OutputFileFactory {
             if (parent != null) {
                 Files.createDirectories(parent);
             }
-            return HadoopOutputFile.fromPath(new org.apache.hadoop.fs.Path(resolvedPath.toString()), new Configuration());
+            Configuration conf = new Configuration();
+            conf.setClassLoader(OutputFileFactory.class.getClassLoader());
+            conf.set("fs.file.impl", org.apache.hadoop.fs.LocalFileSystem.class.getName());
+            return HadoopOutputFile.fromPath(new org.apache.hadoop.fs.Path(resolvedPath.toString()), conf);
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         }

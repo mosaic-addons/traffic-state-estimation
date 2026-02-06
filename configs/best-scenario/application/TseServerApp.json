@@ -10,6 +10,12 @@
         {
             "type": "SpatioTemporalProcessor",
             "spatialMeanSpeedChunkSize": "15m"
+        },
+        {
+            "type": "AggregatedSpatioTemporalProcessor",
+            "aggregationInterval": "15min",
+            "processingDelay": "5min",
+            "spatialMeanSpeedChunkSize": "15m"
         }
     ],
     "timeBasedProcessors": [

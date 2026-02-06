@@ -74,4 +74,18 @@ public interface FcdDataStorage {
     Map<String, TraversalStatistics> getAveragesForInterval(long timestamp, long interval);
 
     boolean gotThresholdFor(String connectionId);
+
+    /**
+     * Inserts aggregated traversal metrics for a connection over a specific time interval.
+     *
+     * @param connectionId         the connection ID
+     * @param intervalStart        start timestamp of the aggregation interval [ns]
+     * @param intervalEnd          end timestamp of the aggregation interval [ns]
+     * @param avgSpatialMeanSpeed  average spatial mean speed over the interval [m/s]
+     * @param avgTemporalMeanSpeed average temporal mean speed over the interval [m/s]
+     * @param sampleCount          number of traversals aggregated in this interval
+     */
+    void insertAggregatedTraversalMetrics(String connectionId, long intervalStart, long intervalEnd,
+                                          double avgSpatialMeanSpeed, double avgTemporalMeanSpeed,
+                                          int sampleCount);
 }
