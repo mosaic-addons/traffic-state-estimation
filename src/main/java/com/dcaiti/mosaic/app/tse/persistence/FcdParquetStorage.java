@@ -530,6 +530,9 @@ public class FcdParquetStorage implements FcdDataStorage {
                 float avgRtsm = (float) stats.stream()
                         .mapToDouble(s -> s.getRelativeTrafficStatusMetric() != null ? s.getRelativeTrafficStatusMetric() : 0)
                         .average().orElse(0);
+                double avgSpi = stats.stream()
+                        .mapToDouble(s -> s.getSpeedPerformanceIndex() != null ? s.getSpeedPerformanceIndex() : 0)
+                        .average().orElse(0);
 
                 TraversalStatistics avgStat = new TraversalStatistics(
                         entry.getKey(),
@@ -539,7 +542,7 @@ public class FcdParquetStorage implements FcdDataStorage {
                         avgSpatial,
                         avgNaive,
                         avgRtsm,
-                        null
+                        avgSpi
                 );
                 averages.put(entry.getKey(), avgStat);
             }
