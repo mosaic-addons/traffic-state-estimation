@@ -70,6 +70,8 @@ public abstract class AbstractSpatioTemporalProcessor implements TraversalBasedP
             long timestamp,
             double temporalMeanSpeed,
             double spatialMeanSpeed,
+            double naiveMeanSpeed,
+            double speedPerformanceIndex,
             double traversalTime
     ) {}
 
@@ -132,10 +134,15 @@ public abstract class AbstractSpatioTemporalProcessor implements TraversalBasedP
             double traversalTime = distanceTimeSpline.value(length) - distanceTimeSpline.value(0);
             double temporalMeanSpeed = (length / traversalTime) * TIME.SECOND;
             double spatialMeanSpeed = computeSpatialMeanSpeed(records, distanceSpeedSpline);
+            double naiveMeanSpeed = computeNaiveTemporalMeanSpeed(records);
+            
+            // Compute Speed Performance Index (SPI) = temporalMeanSpeed / maxAllowedSpeed
+            double maxSpeed = networkDatabase.getConnection(connectionId).getMaxSpeedInMs();
+            double speedPerformanceIndex = maxSpeed > 0 ? temporalMeanSpeed / maxSpeed : 0.0;
 
             long timestamp = traversal.getTraversal().get(traversal.getTraversal().size() - 1).getTimeStamp();
 
-            return new ComputedMetrics(timestamp, temporalMeanSpeed, spatialMeanSpeed, traversalTime);
+            return new ComputedMetrics(timestamp, temporalMeanSpeed, spatialMeanSpeed, naiveMeanSpeed, speedPerformanceIndex, traversalTime);
         } catch (OutOfRangeException e) {
             logger.debug("Error during computeTraversalMetrics() for {} on Connection {}: {}", vehicleId, connectionId, e.getMessage());
             return null;

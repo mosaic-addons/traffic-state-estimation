@@ -58,6 +58,7 @@ public class FcdParquetStorage implements FcdDataStorage {
                 {"name": "spatialMeanSpeed", "type": "double"},
                 {"name": "naiveMeanSpeed", "type": "double"},
                 {"name": "relativeTrafficStatusMetric", "type": ["null", "float"], "default": null},
+                {"name": "speedPerformanceIndex", "type": ["null", "double"], "default": null},
                 {"name": "traversalTime", "type": "long"}
               ]
             }
@@ -99,6 +100,8 @@ public class FcdParquetStorage implements FcdDataStorage {
                 {"name": "intervalEnd", "type": "long"},
                 {"name": "avgTemporalMeanSpeed", "type": "double"},
                 {"name": "avgSpatialMeanSpeed", "type": "double"},
+                {"name": "avgNaiveMeanSpeed", "type": "double"},
+                {"name": "avgSpeedPerformanceIndex", "type": "double"},
                 {"name": "sampleCount", "type": "int"}
               ]
             }
@@ -121,6 +124,7 @@ public class FcdParquetStorage implements FcdDataStorage {
             double spatialMeanSpeed,
             double naiveMeanSpeed,
             Float relativeTrafficStatusMetric,
+            Double speedPerformanceIndex,
             long traversalTime
     ) {}
 
@@ -192,6 +196,7 @@ public class FcdParquetStorage implements FcdDataStorage {
             record.put("spatialMeanSpeed", metric.spatialMeanSpeed());
             record.put("naiveMeanSpeed", metric.naiveMeanSpeed());
             record.put("relativeTrafficStatusMetric", metric.relativeTrafficStatusMetric());
+            record.put("speedPerformanceIndex", metric.speedPerformanceIndex());
             record.put("traversalTime", metric.traversalTime());
         };
 
@@ -223,6 +228,8 @@ public class FcdParquetStorage implements FcdDataStorage {
             record.put("intervalEnd", aggregated.intervalEnd());
             record.put("avgTemporalMeanSpeed", aggregated.avgTemporalMeanSpeed());
             record.put("avgSpatialMeanSpeed", aggregated.avgSpatialMeanSpeed());
+            record.put("avgNaiveMeanSpeed", aggregated.avgNaiveMeanSpeed());
+            record.put("avgSpeedPerformanceIndex", aggregated.avgSpeedPerformanceIndex());
             record.put("sampleCount", aggregated.sampleCount());
         };
 
@@ -278,11 +285,11 @@ public class FcdParquetStorage implements FcdDataStorage {
     @Override
     public void insertTraversalMetrics(String vehicleId, long timestamp, String connectionId, String nextConnection,
                                        double spatialMeanSpeed, double temporalMeanSpeed, double naiveMeanSpeed,
-                                       float relativeMetric, long traversalTime) {
+                                       float relativeMetric, double speedPerformanceIndex, long traversalTime) {
         TraversalMetricRecord metric = new TraversalMetricRecord(
                 vehicleId, timestamp, connectionId, nextConnection,
                 spatialMeanSpeed, temporalMeanSpeed, naiveMeanSpeed,
-                relativeMetric, traversalTime
+                relativeMetric, speedPerformanceIndex, traversalTime
         );
 
         try {
@@ -297,7 +304,7 @@ public class FcdParquetStorage implements FcdDataStorage {
             // Update caches for read operations - create TraversalStatistics for cache
             TraversalStatistics stat = new TraversalStatistics(
                     connectionId, -1, timestamp, temporalMeanSpeed, spatialMeanSpeed,
-                    relativeMetric, null
+                    relativeMetric, speedPerformanceIndex
             );
             stat.setRelativeTrafficStatusMetric(relativeMetric);
 
@@ -367,6 +374,7 @@ public class FcdParquetStorage implements FcdDataStorage {
                             originalRecord.spatialMeanSpeed(),
                             originalRecord.naiveMeanSpeed(),
                             updatedRtsm,
+                            originalRecord.speedPerformanceIndex(),
                             originalRecord.traversalTime()
                     );
 
@@ -426,10 +434,13 @@ public class FcdParquetStorage implements FcdDataStorage {
     @Override
     public void insertAggregatedTraversalMetrics(String connectionId, long intervalStart, long intervalEnd,
                                                  double avgSpatialMeanSpeed, double avgTemporalMeanSpeed,
+                                                 double avgNaiveMeanSpeed, double avgSpeedPerformanceIndex,
                                                  int sampleCount) {
         AggregatedMetricRecord record = new AggregatedMetricRecord(
                 connectionId, intervalStart, intervalEnd,
-                avgTemporalMeanSpeed, avgSpatialMeanSpeed, sampleCount
+                avgTemporalMeanSpeed, avgSpatialMeanSpeed,
+                avgNaiveMeanSpeed, avgSpeedPerformanceIndex,
+                sampleCount
         );
 
         try {

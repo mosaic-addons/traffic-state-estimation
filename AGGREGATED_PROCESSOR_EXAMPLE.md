@@ -113,6 +113,8 @@ Aggregated metrics are stored in the `aggregated_traversal_metrics` table:
 | `intervalEnd` | INTEGER | End timestamp of interval (ns) |
 | `temporalMeanSpeed` | REAL | Average temporal mean speed (m/s) |
 | `spatialMeanSpeed` | REAL | Average spatial mean speed (m/s) |
+| `naiveMeanSpeed` | REAL | Average naive mean speed (m/s) |
+| `speedPerformanceIndex` | REAL | Average speed performance index |
 | `sampleCount` | INTEGER | Number of traversals in interval |
 | `timeOfInsertionUTC` | DATETIME | UTC timestamp of insertion |
 
@@ -130,6 +132,8 @@ Aggregated metrics are written to `aggregated_metrics.parquet` with the schema:
     {"name": "intervalEnd", "type": "long"},
     {"name": "avgTemporalMeanSpeed", "type": "double"},
     {"name": "avgSpatialMeanSpeed", "type": "double"},
+    {"name": "avgNaiveMeanSpeed", "type": "double"},
+    {"name": "avgSpeedPerformanceIndex", "type": "double"},
     {"name": "sampleCount", "type": "int"}
   ]
 }

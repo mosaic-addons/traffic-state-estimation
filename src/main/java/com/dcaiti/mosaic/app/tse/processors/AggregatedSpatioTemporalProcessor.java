@@ -75,10 +75,14 @@ public class AggregatedSpatioTemporalProcessor extends AbstractSpatioTemporalPro
     private static class IntervalMetrics {
         private final Aggregator temporalMeanSpeed = new Aggregator();
         private final Aggregator spatialMeanSpeed = new Aggregator();
+        private final Aggregator naiveMeanSpeed = new Aggregator();
+        private final Aggregator speedPerformanceIndex = new Aggregator();
 
-        void add(double temporalMeanSpeed, double spatialMeanSpeed) {
+        void add(double temporalMeanSpeed, double spatialMeanSpeed, double naiveMeanSpeed, double speedPerformanceIndex) {
             this.temporalMeanSpeed.add(temporalMeanSpeed);
             this.spatialMeanSpeed.add(spatialMeanSpeed);
+            this.naiveMeanSpeed.add(naiveMeanSpeed);
+            this.speedPerformanceIndex.add(speedPerformanceIndex);
         }
 
         Aggregator getTemporalMeanSpeed() {
@@ -87,6 +91,14 @@ public class AggregatedSpatioTemporalProcessor extends AbstractSpatioTemporalPro
 
         Aggregator getSpatialMeanSpeed() {
             return spatialMeanSpeed;
+        }
+        
+        Aggregator getNaiveMeanSpeed() {
+            return naiveMeanSpeed;
+        }
+        
+        Aggregator getSpeedPerformanceIndex() {
+            return speedPerformanceIndex;
         }
     }
 
@@ -128,7 +140,7 @@ public class AggregatedSpatioTemporalProcessor extends AbstractSpatioTemporalPro
         aggregationBuffer
                 .computeIfAbsent(connectionId, k -> new HashMap<>())
                 .computeIfAbsent(intervalStart, k -> new IntervalMetrics())
-                .add(metrics.temporalMeanSpeed(), metrics.spatialMeanSpeed());
+                .add(metrics.temporalMeanSpeed(), metrics.spatialMeanSpeed(), metrics.naiveMeanSpeed(), metrics.speedPerformanceIndex());
     }
 
     /**
@@ -163,7 +175,9 @@ public class AggregatedSpatioTemporalProcessor extends AbstractSpatioTemporalPro
                         intervalEnd,
                         metrics.getSpatialMeanSpeed().average(),
                         metrics.getTemporalMeanSpeed().average(),
-                        metrics.getTemporalMeanSpeed().total()
+                        metrics.getNaiveMeanSpeed().average(),
+                        metrics.getSpeedPerformanceIndex().average(),
+                        (int) metrics.getTemporalMeanSpeed().total()
                 );
                 intervals.remove(intervalStart);
                 logger.debug("Flushed aggregated metrics for connection {} at interval [{}, {}] with {} samples",
@@ -201,7 +215,9 @@ public class AggregatedSpatioTemporalProcessor extends AbstractSpatioTemporalPro
                         intervalEnd,
                         metrics.getSpatialMeanSpeed().average(),
                         metrics.getTemporalMeanSpeed().average(),
-                        metrics.getTemporalMeanSpeed().total()
+                        metrics.getNaiveMeanSpeed().average(),
+                        metrics.getSpeedPerformanceIndex().average(),
+                        (int) metrics.getTemporalMeanSpeed().total()
                 );
                 logger.debug("Flushed aggregated metrics for connection {} at interval [{}, {}] with {} samples (shutdown)",
                         connectionId, intervalStart, intervalEnd, metrics.getTemporalMeanSpeed().total());

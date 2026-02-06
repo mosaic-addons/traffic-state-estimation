@@ -68,8 +68,9 @@ public class SpatioTemporalProcessor extends AbstractSpatioTemporalProcessor {
                 traversal.getFollowingRecord() == null ? connectionId : traversal.getFollowingRecord().getConnectionId(),
                 metrics.spatialMeanSpeed(),
                 metrics.temporalMeanSpeed(),
-                computeNaiveTemporalMeanSpeed(records),
+                metrics.naiveMeanSpeed(),
                 relativeMetric,
+                metrics.speedPerformanceIndex(),
                 (long) metrics.traversalTime()
         );
     }

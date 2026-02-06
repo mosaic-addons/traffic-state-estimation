@@ -75,6 +75,7 @@ public class FcdDatabaseHelper implements FcdDataStorage {
     private static final String COLUMN_INTERVAL_START = "intervalStart";
     private static final String COLUMN_INTERVAL_END = "intervalEnd";
     private static final String COLUMN_SAMPLE_COUNT = "sampleCount";
+    private static final String COLUMN_SPEED_PERFORMANCE_INDEX = "speedPerformanceIndex";
     /**
      * Configurable parameter using the {@link CTseServerApp#fcdDataStorage}
      * type-based config. If this is set to {@code true} all sqlite transactions will be handled in-memory, which may lead to increased
@@ -238,6 +239,8 @@ public class FcdDatabaseHelper implements FcdDataStorage {
                         + COLUMN_INTERVAL_END + " INTEGER NOT NULL, "
                         + COLUMN_TEMPORAL_MEAN_SPEED + " REAL NOT NULL, "
                         + COLUMN_SPATIAL_MEAN_SPEED + " REAL NOT NULL, "
+                        + COLUMN_NAIVE_MEAN_SPEED + " REAL NOT NULL, "
+                        + COLUMN_SPEED_PERFORMANCE_INDEX + " REAL NOT NULL, "
                         + COLUMN_SAMPLE_COUNT + " INTEGER NOT NULL, "
                         + COLUMN_TIME_OF_INSERTION + " DATETIME DEFAULT CURRENT_TIMESTAMP, "
                         + "PRIMARY KEY (" + COLUMN_CONNECTION_ID + ", " + COLUMN_INTERVAL_START + ")"
@@ -332,7 +335,7 @@ public class FcdDatabaseHelper implements FcdDataStorage {
     @Override
     public void insertTraversalMetrics(String vehicleId, long timestamp, String connectionId,
                                        String nextConnection, double spatialMeanSpeed, double temporalMeanSpeed,
-                                       double naiveMeanSpeed, float relativeMetric, long traversalTime) {
+                                       double naiveMeanSpeed, float relativeMetric, double speedPerformanceIndex, long traversalTime) {
         String sqlSubMetricInsert = "INSERT INTO " + TABLE_TRAVERSAL_METRICS + "("
                 + COLUMN_VEH_ID + ","
                 + COLUMN_TIME_STAMP + ","
@@ -737,6 +740,7 @@ public class FcdDatabaseHelper implements FcdDataStorage {
     @Override
     public void insertAggregatedTraversalMetrics(String connectionId, long intervalStart, long intervalEnd,
                                                  double avgSpatialMeanSpeed, double avgTemporalMeanSpeed,
+                                                 double avgNaiveMeanSpeed, double avgSpeedPerformanceIndex,
                                                  int sampleCount) {
         String sqlInsert = "INSERT OR REPLACE INTO " + TABLE_AGGREGATED_METRICS + "("
                 + COLUMN_CONNECTION_ID + ","
@@ -744,15 +748,19 @@ public class FcdDatabaseHelper implements FcdDataStorage {
                 + COLUMN_INTERVAL_END + ","
                 + COLUMN_TEMPORAL_MEAN_SPEED + ","
                 + COLUMN_SPATIAL_MEAN_SPEED + ","
+                + COLUMN_NAIVE_MEAN_SPEED + ","
+                + COLUMN_SPEED_PERFORMANCE_INDEX + ","
                 + COLUMN_SAMPLE_COUNT + ")"
-                + " VALUES(?,?,?,?,?,?)";
+                + " VALUES(?,?,?,?,?,?,?,?)";
         try (PreparedStatement statement = connection.prepareStatement(sqlInsert)) {
             statement.setString(1, connectionId);
             statement.setLong(2, intervalStart);
             statement.setLong(3, intervalEnd);
             statement.setDouble(4, avgTemporalMeanSpeed);
             statement.setDouble(5, avgSpatialMeanSpeed);
-            statement.setInt(6, sampleCount);
+            statement.setDouble(6, avgNaiveMeanSpeed);
+            statement.setDouble(7, avgSpeedPerformanceIndex);
+            statement.setInt(8, sampleCount);
             statement.execute();
         } catch (SQLException exception) {
             logErrorAndThrowRuntimeException(exception, "AGGREGATED METRIC INSERTION");

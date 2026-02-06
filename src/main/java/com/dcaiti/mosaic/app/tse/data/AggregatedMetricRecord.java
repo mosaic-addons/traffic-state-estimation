@@ -24,5 +24,7 @@ public record AggregatedMetricRecord(
     long intervalEnd,
     double avgTemporalMeanSpeed,
     double avgSpatialMeanSpeed,
+    double avgNaiveMeanSpeed,
+    double avgSpeedPerformanceIndex,
     int sampleCount
 ) {}

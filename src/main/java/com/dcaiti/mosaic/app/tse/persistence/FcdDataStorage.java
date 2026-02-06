@@ -53,7 +53,7 @@ public interface FcdDataStorage {
 
     void insertTraversalMetrics(String vehicleId, long timestamp, String connectionId, String nextConnection,
                                 double spatialMeanSpeed, double temporalMeanSpeed, double naiveMeanSpeed,
-                                float relativeMetric, long traversalTime);
+                                float relativeMetric, double speedPerformanceIndex, long traversalTime);
 
     void updateTraversalMetrics(ArrayList<TraversalStatistics> traversals);
 
@@ -83,9 +83,12 @@ public interface FcdDataStorage {
      * @param intervalEnd          end timestamp of the aggregation interval [ns]
      * @param avgSpatialMeanSpeed  average spatial mean speed over the interval [m/s]
      * @param avgTemporalMeanSpeed average temporal mean speed over the interval [m/s]
+     * @param avgNaiveMeanSpeed    average naive mean speed over the interval [m/s]
+     * @param avgSpeedPerformanceIndex average speed performance index over the interval
      * @param sampleCount          number of traversals aggregated in this interval
      */
     void insertAggregatedTraversalMetrics(String connectionId, long intervalStart, long intervalEnd,
                                           double avgSpatialMeanSpeed, double avgTemporalMeanSpeed,
+                                          double avgNaiveMeanSpeed, double avgSpeedPerformanceIndex,
                                           int sampleCount);
 }
