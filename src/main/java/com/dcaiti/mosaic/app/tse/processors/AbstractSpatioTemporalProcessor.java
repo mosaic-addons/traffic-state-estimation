@@ -140,9 +140,7 @@ public abstract class AbstractSpatioTemporalProcessor implements TraversalBasedP
             double maxSpeed = networkDatabase.getConnection(connectionId).getMaxSpeedInMs();
             double speedPerformanceIndex = maxSpeed > 0 ? temporalMeanSpeed / maxSpeed : 0.0;
             // Clamp SPI to maximum 1.0
-            if (speedPerformanceIndex > 1.0) {
-                speedPerformanceIndex = 1.0;
-            }
+            speedPerformanceIndex = Math.min(speedPerformanceIndex, 1.0);
 
             long timestamp = traversal.getTraversal().get(traversal.getTraversal().size() - 1).getTimeStamp();
 
