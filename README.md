@@ -144,6 +144,12 @@ which are used to configure the vehicles and the server respectively.
         {
             "type": "SpatioTemporalProcessor",
             "spatialMeanSpeedChunkSize": "15m"
+        },
+        {
+            "type": "AggregatedSpatioTemporalProcessor",
+            "aggregationInterval": "15min",
+            "processingDelay": "5min",
+            "spatialMeanSpeedChunkSize": "15m"
         }
     ],
     "timeBasedProcessors": [
@@ -157,6 +163,10 @@ which are used to configure the vehicles and the server respectively.
     ]
 }
 ```
+
+**Aggregated Spatio-Temporal Metrics**
+The `AggregatedSpatioTemporalProcessor` allows for aggregating traffic metrics over configurable time intervals, reducing data volume while preserving analytical value. 
+For more details and configuration examples, please refer to the [Aggregated Processor Documentation](AGGREGATED_PROCESSOR_EXAMPLE.md).
 
 **Write all FCD into the database**
 For different purposes it can be useful to write all received FCD Records into the database.
@@ -172,6 +182,45 @@ To achieve this, you can add the `FcdWriterProcessor` to your list of `timeBased
     ]
 }
 ```
+
+**Parquet File Support**
+The application supports efficient storage of Floating Car Data (FCD) and traffic metrics using Apache Parquet. This format is optimized for analytics and provides significant performance benefits over traditional database storage, especially for large-scale simulations.
+
+To enable Parquet storage, configure the `TseServerApp.json` file in your scenario's `application` directory. Set the `fcdDataStorage` type to `FcdParquetStorage` and specify an optional `parquetOutputPath`.
+
+```json
+{
+    "fcdDataStorage": {
+        "type": "FcdParquetStorage"
+    },
+    "parquetOutputPath": "/path/to/output/directory",
+    ...
+}
+```
+
+If `parquetOutputPath` is not specified, files will be written to the application's log directory.
+
+The application generates several Parquet files containing different types of data:
+
+| File Name | Description | Key Fields |
+|-----------|-------------|------------|
+| `fcd_records.parquet` | Raw FCD messages received from vehicles | `vehicleId`, `timestamp`, `speed`, `position` (GeoParquet) |
+| `traversal_metrics.parquet` | Metrics calculated per edge traversal | `temporalMeanSpeed`, `spatialMeanSpeed`, `naiveMeanSpeed`, `speedPerformanceIndex` |
+| `aggregated_metrics.parquet` | Metrics aggregated over time intervals | `avgTemporalMeanSpeed`, `avgSpatialMeanSpeed`, `sampleCount` |
+| `thresholds.parquet` | Dynamic speed thresholds calculated by the system | `temporalThreshold`, `spatialThreshold` |
+| `connection_data.parquet` | Static network information | `connectionID`, `length`, `maxSpeed` |
+
+### Writing Custom Parquet Files
+
+The application provides a flexible API for writing custom data to Parquet files using the `ParquetSink` interface. 
+This allows developers to easily extend the application with new data sinks.
+
+#### Key Components
+
+- **Schema**: Defines the structure of the data using Avro JSON format.
+- **RecordEncoder**: Maps your Java object fields to the Avro record.
+- **ParquetSink**: Handles the efficient writing of records to the file system.
+- **ParquetSinkConfig**: Manages file paths and compression settings.
 
 ## Evaluation Utilities
 Within the **evaluation** directory, we bundled python scripts for reading and preprocessing simulation data.

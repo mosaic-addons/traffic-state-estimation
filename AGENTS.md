@@ -54,7 +54,9 @@ com.dcaiti.mosaic.app.tse/              # Traffic state estimation logic
 │   ├── TraversalBasedProcessor         # Edge-traversal based processing
 │   ├── MessageBasedProcessor           # Per-message processing
 │   ├── ThresholdProcessor              # Threshold calculation
+│   ├── AbstractSpatioTemporalProcessor # Shared spatial-temporal logic
 │   ├── SpatioTemporalProcessor         # Spatial-temporal metrics
+│   ├── AggregatedSpatioTemporalProcessor # Aggregated metrics
 │   └── FcdWriterProcessor              # Database writer
 ├── persistence/                        # Database access layer
 │   ├── FcdDataStorage                  # Storage interface
@@ -93,6 +95,10 @@ mvn clean install -DskipTests
 # Generate JAR with dependencies for MOSAIC deployment
 mvn clean package
 # Output: target/traffic-state-estimation-26.0-SNAPSHOT.jar
+
+# Generate standalone JAR with all dependencies (shaded)
+mvn clean package -Pfcd-shaded-jar
+# Output: target/traffic-state-estimation-26.0-SNAPSHOT-jar-with-dependencies.jar
 
 # Run all tests
 mvn test
