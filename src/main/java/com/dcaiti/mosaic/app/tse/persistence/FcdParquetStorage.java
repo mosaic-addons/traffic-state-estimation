@@ -288,7 +288,7 @@ public class FcdParquetStorage implements FcdDataStorage {
                                        float relativeMetric, double speedPerformanceIndex, long traversalTime) {
         TraversalMetricRecord metric = new TraversalMetricRecord(
                 vehicleId, timestamp, connectionId, nextConnection,
-                spatialMeanSpeed, temporalMeanSpeed, naiveMeanSpeed,
+                temporalMeanSpeed, spatialMeanSpeed, naiveMeanSpeed,
                 relativeMetric, speedPerformanceIndex, traversalTime
         );
 
