@@ -739,7 +739,7 @@ public class FcdDatabaseHelper implements FcdDataStorage {
 
     @Override
     public void insertAggregatedTraversalMetrics(String connectionId, long intervalStart, long intervalEnd,
-                                                 double avgSpatialMeanSpeed, double avgTemporalMeanSpeed,
+                                                 double avgTemporalMeanSpeed, double avgSpatialMeanSpeed,
                                                  double avgNaiveMeanSpeed, double avgSpeedPerformanceIndex,
                                                  int sampleCount) {
         String sqlInsert = "INSERT OR REPLACE INTO " + TABLE_AGGREGATED_METRICS + "("

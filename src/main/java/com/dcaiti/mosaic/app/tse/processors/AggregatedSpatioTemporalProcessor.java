@@ -15,7 +15,6 @@
 
 package com.dcaiti.mosaic.app.tse.processors;
 
-import com.dcaiti.mosaic.app.fxd.data.FcdRecord;
 import com.dcaiti.mosaic.app.fxd.data.FcdTraversal;
 import org.eclipse.mosaic.fed.application.ambassador.util.UnitLogger;
 import org.eclipse.mosaic.lib.math.Aggregator;
@@ -173,11 +172,11 @@ public class AggregatedSpatioTemporalProcessor extends AbstractSpatioTemporalPro
                         connectionId,
                         intervalStart,
                         intervalEnd,
-                        metrics.getSpatialMeanSpeed().average(),
                         metrics.getTemporalMeanSpeed().average(),
+                        metrics.getSpatialMeanSpeed().average(),
                         metrics.getNaiveMeanSpeed().average(),
                         metrics.getSpeedPerformanceIndex().average(),
-                        (int) metrics.getTemporalMeanSpeed().total()
+                        metrics.getTemporalMeanSpeed().total()
                 );
                 intervals.remove(intervalStart);
                 logger.debug("Flushed aggregated metrics for connection {} at interval [{}, {}] with {} samples",
@@ -213,11 +212,11 @@ public class AggregatedSpatioTemporalProcessor extends AbstractSpatioTemporalPro
                         connectionId,
                         intervalStart,
                         intervalEnd,
-                        metrics.getSpatialMeanSpeed().average(),
                         metrics.getTemporalMeanSpeed().average(),
+                        metrics.getSpatialMeanSpeed().average(),
                         metrics.getNaiveMeanSpeed().average(),
                         metrics.getSpeedPerformanceIndex().average(),
-                        (int) metrics.getTemporalMeanSpeed().total()
+                        metrics.getTemporalMeanSpeed().total()
                 );
                 logger.debug("Flushed aggregated metrics for connection {} at interval [{}, {}] with {} samples (shutdown)",
                         connectionId, intervalStart, intervalEnd, metrics.getTemporalMeanSpeed().total());

@@ -433,7 +433,7 @@ public class FcdParquetStorage implements FcdDataStorage {
 
     @Override
     public void insertAggregatedTraversalMetrics(String connectionId, long intervalStart, long intervalEnd,
-                                                 double avgSpatialMeanSpeed, double avgTemporalMeanSpeed,
+                                                 double avgTemporalMeanSpeed, double avgSpatialMeanSpeed,
                                                  double avgNaiveMeanSpeed, double avgSpeedPerformanceIndex,
                                                  int sampleCount) {
         AggregatedMetricRecord record = new AggregatedMetricRecord(

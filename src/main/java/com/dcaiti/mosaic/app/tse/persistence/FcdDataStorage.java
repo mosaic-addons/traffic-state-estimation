@@ -81,14 +81,14 @@ public interface FcdDataStorage {
      * @param connectionId         the connection ID
      * @param intervalStart        start timestamp of the aggregation interval [ns]
      * @param intervalEnd          end timestamp of the aggregation interval [ns]
-     * @param avgSpatialMeanSpeed  average spatial mean speed over the interval [m/s]
      * @param avgTemporalMeanSpeed average temporal mean speed over the interval [m/s]
+     * @param avgSpatialMeanSpeed  average spatial mean speed over the interval [m/s]
      * @param avgNaiveMeanSpeed    average naive mean speed over the interval [m/s]
      * @param avgSpeedPerformanceIndex average speed performance index over the interval
      * @param sampleCount          number of traversals aggregated in this interval
      */
     void insertAggregatedTraversalMetrics(String connectionId, long intervalStart, long intervalEnd,
-                                          double avgSpatialMeanSpeed, double avgTemporalMeanSpeed,
+                                          double avgTemporalMeanSpeed, double avgSpatialMeanSpeed,
                                           double avgNaiveMeanSpeed, double avgSpeedPerformanceIndex,
                                           int sampleCount);
 }
