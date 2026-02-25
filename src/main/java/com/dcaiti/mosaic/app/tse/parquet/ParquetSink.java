@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Fraunhofer FOKUS and others. All rights reserved.
+ * Copyright (c) 2026 Fraunhofer FOKUS and others. All rights reserved.
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
