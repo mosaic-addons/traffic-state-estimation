@@ -20,7 +20,7 @@ import com.dcaiti.mosaic.app.fxd.data.FcdTraversal;
 import com.dcaiti.mosaic.app.fxd.messages.FcdUpdateMessage;
 import com.dcaiti.mosaic.app.tse.config.CTseServerApp;
 import com.dcaiti.mosaic.app.tse.persistence.FcdDataStorage;
-import com.dcaiti.mosaic.app.tse.persistence.FcdDatabaseHelper;
+import com.dcaiti.mosaic.app.tse.persistence.FcdParquetStorage;
 import com.dcaiti.mosaic.app.tse.persistence.ScenarioDatabaseHelper;
 import com.dcaiti.mosaic.app.tse.processors.SpatioTemporalProcessor;
 import com.dcaiti.mosaic.app.tse.processors.ThresholdProcessor;
@@ -31,7 +31,6 @@ import org.eclipse.mosaic.lib.util.scheduling.EventManager;
 import com.google.common.collect.Lists;
 
 import java.nio.file.Path;
-import java.nio.file.Paths;
 
 /**
  * An extension of {@link FxdReceiverApp} adding the data storage in the form of the {@link FcdDataStorage} and the
@@ -43,7 +42,7 @@ public class TseServerApp
 
     /**
      * Storage field, allowing to persist TSE results as well as data exchange between processors.
-     * Default value will be a {@link FcdDatabaseHelper}
+     * Default value is {@link FcdParquetStorage}.
      */
     private FcdDataStorage fcdDataStorage;
 
@@ -74,12 +73,12 @@ public class TseServerApp
     protected TseKernel initKernel(EventManager eventManager, CTseServerApp config) {
         addRequiredProcessors(config);
         Database networkDatabase = ScenarioDatabaseHelper.getNetworkDbFromFile(getOs());
-        String databaseDirectory = config.databasePath == null ? getOs().getConfigurationPath().getPath() : getConfiguration().databasePath;
-        String databaseFileName = getConfiguration().databaseFileName == null ? "FcdData.sqlite" : getConfiguration().databaseFileName;
-        Path databasePath = Paths.get(databaseDirectory, databaseFileName);
-        // set data storage to configured type else use default FcdDatabaseHelper
-        fcdDataStorage = config.fcdDataStorage == null ? new FcdDatabaseHelper() : config.fcdDataStorage;
-        fcdDataStorage.initialize(databasePath, networkDatabase, config.isPersistent, getLog());
+        
+        // Set data storage to configured type else use default FcdParquetStorage
+        fcdDataStorage = config.fcdDataStorage == null ? new FcdParquetStorage() : config.fcdDataStorage;
+        Path outputPath = fcdDataStorage.resolveOutputPath(config);
+
+        fcdDataStorage.initialize(outputPath, networkDatabase, config.isPersistent, getLog());
         return new TseKernel(eventManager, getLog(), config, fcdDataStorage, networkDatabase);
     }
 

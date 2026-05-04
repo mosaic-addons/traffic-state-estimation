@@ -16,6 +16,7 @@
 package com.dcaiti.mosaic.app.tse.persistence;
 
 import com.dcaiti.mosaic.app.fxd.data.FcdRecord;
+import com.dcaiti.mosaic.app.tse.config.CTseServerApp;
 import com.dcaiti.mosaic.app.tse.data.IMetricsBuffer;
 import com.dcaiti.mosaic.app.tse.data.TraversalStatistics;
 import org.eclipse.mosaic.fed.application.ambassador.util.UnitLogger;
@@ -53,7 +54,7 @@ public interface FcdDataStorage {
 
     void insertTraversalMetrics(String vehicleId, long timestamp, String connectionId, String nextConnection,
                                 double spatialMeanSpeed, double temporalMeanSpeed, double naiveMeanSpeed,
-                                float relativeMetric, long traversalTime);
+                                float relativeMetric, double speedPerformanceIndex, long traversalTime);
 
     void updateTraversalMetrics(ArrayList<TraversalStatistics> traversals);
 
@@ -74,4 +75,30 @@ public interface FcdDataStorage {
     Map<String, TraversalStatistics> getAveragesForInterval(long timestamp, long interval);
 
     boolean gotThresholdFor(String connectionId);
+
+    /**
+     * Inserts aggregated traversal metrics for a connection over a specific time interval.
+     *
+     * @param connectionId         the connection ID
+     * @param intervalStart        start timestamp of the aggregation interval [ns]
+     * @param intervalEnd          end timestamp of the aggregation interval [ns]
+     * @param avgTemporalMeanSpeed average temporal mean speed over the interval [m/s]
+     * @param avgSpatialMeanSpeed  average spatial mean speed over the interval [m/s]
+     * @param avgNaiveMeanSpeed    average naive mean speed over the interval [m/s]
+     * @param avgSpeedPerformanceIndex average speed performance index over the interval
+     * @param sampleCount          number of traversals aggregated in this interval
+     */
+    void insertAggregatedTraversalMetrics(String connectionId, long intervalStart, long intervalEnd,
+                                          double avgTemporalMeanSpeed, double avgSpatialMeanSpeed,
+                                          double avgNaiveMeanSpeed, double avgSpeedPerformanceIndex,
+                                          int sampleCount);
+
+    /**
+     * Resolves the output {@link Path} for this storage implementation from the given config.
+     * Each implementation interprets the config fields relevant to its storage type.
+     *
+     * @param config the server application configuration
+     * @return the resolved output path
+     */
+    Path resolveOutputPath(CTseServerApp config);
 }

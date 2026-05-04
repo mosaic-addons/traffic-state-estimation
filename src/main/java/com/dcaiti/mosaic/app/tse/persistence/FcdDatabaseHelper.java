@@ -19,6 +19,7 @@ import com.dcaiti.mosaic.app.fxd.data.FcdRecord;
 import com.dcaiti.mosaic.app.tse.config.CTseServerApp;
 import com.dcaiti.mosaic.app.tse.data.IMetricsBuffer;
 import com.dcaiti.mosaic.app.tse.data.TraversalStatistics;
+import org.eclipse.mosaic.fed.application.ambassador.SimulationKernel;
 import org.eclipse.mosaic.fed.application.ambassador.util.UnitLogger;
 import org.eclipse.mosaic.lib.database.Database;
 
@@ -27,6 +28,7 @@ import org.apache.commons.math3.util.Pair;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -41,13 +43,19 @@ import java.util.Map;
 
 /**
  * Helper class to connect to FcdDatabase and perform queries.
+ * 
+ * @deprecated This class is deprecated in favor of {@link FcdParquetStorage} which outputs
+ *             data in Parquet/GeoParquet format instead of SQLite. SQLite support may be
+ *             removed in future versions. Use FcdParquetStorage for new projects.
  */
+@Deprecated
 public class FcdDatabaseHelper implements FcdDataStorage {
     // DB strings
     private static final String TABLE_RECORDS = "fcd_records";
     private static final String TABLE_TRAVERSAL_METRICS = "traversal_metrics";
     private static final String TABLE_THRESHOLDS = "thresholds_for_connections";
     private static final String TABLE_CONNECTIONS = "connection_data";
+    private static final String TABLE_AGGREGATED_METRICS = "aggregated_traversal_metrics";
     private static final String COLUMN_NEXT_CONNECTION_ID = "nextConnectionID";
     protected static final String COLUMN_CONNECTION_ID = "connectionID";
     protected static final String COLUMN_TIME_STAMP = "timeStamp";
@@ -66,6 +74,10 @@ public class FcdDatabaseHelper implements FcdDataStorage {
     private static final String COLUMN_TEMPORAL_THRESHOLD = "temporalThreshold";
     private static final String COLUMN_SPATIAL_THRESHOLD = "spatialThreshold";
     private static final String COLUMN_RELATIVE_TRAFFIC_METRIC = "relativeTrafficStatusMetric";
+    private static final String COLUMN_INTERVAL_START = "intervalStart";
+    private static final String COLUMN_INTERVAL_END = "intervalEnd";
+    private static final String COLUMN_SAMPLE_COUNT = "sampleCount";
+    private static final String COLUMN_SPEED_PERFORMANCE_INDEX = "speedPerformanceIndex";
     /**
      * Configurable parameter using the {@link CTseServerApp#fcdDataStorage}
      * type-based config. If this is set to {@code true} all sqlite transactions will be handled in-memory, which may lead to increased
@@ -99,6 +111,15 @@ public class FcdDatabaseHelper implements FcdDataStorage {
      * through connect/close calls.
      */
     protected Connection connection;
+
+    @Override
+    public Path resolveOutputPath(CTseServerApp config) {
+        String dir = config.databasePath != null
+                ? config.databasePath
+                : SimulationKernel.SimulationKernel.getMainLogDirectory().toString();
+        String file = config.databaseFileName != null ? config.databaseFileName : "FcdData.sqlite";
+        return Paths.get(dir, file);
+    }
 
     /**
      * Inits the DB connection and sets up tables and the cache.
@@ -170,7 +191,7 @@ public class FcdDatabaseHelper implements FcdDataStorage {
 
     /**
      * Creates database tables. Overwrites traversal {@link #TABLE_RECORDS}, {@link #TABLE_CONNECTIONS}, {@link #TABLE_TRAVERSAL_METRICS},
-     * and {@link #TABLE_THRESHOLDS} if the database is set to be non-persistent.
+     * {@link #TABLE_THRESHOLDS}, and {@link #TABLE_AGGREGATED_METRICS} if the database is set to be non-persistent.
      *
      * @param isPersistent flag indicating whether tables shall be cleared at startup
      */
@@ -222,6 +243,21 @@ public class FcdDatabaseHelper implements FcdDataStorage {
                         + "); "
                         + "DELETE FROM " + TABLE_CONNECTIONS + "; "
                         + "CREATE INDEX connection_index ON " + TABLE_CONNECTIONS + " (" + COLUMN_CONNECTION_ID + "); ";
+        String aggregatedMetricsSql =
+                "CREATE TABLE IF NOT EXISTS " + TABLE_AGGREGATED_METRICS + " ("
+                        + COLUMN_CONNECTION_ID + " TEXT NOT NULL, "
+                        + COLUMN_INTERVAL_START + " INTEGER NOT NULL, "
+                        + COLUMN_INTERVAL_END + " INTEGER NOT NULL, "
+                        + COLUMN_TEMPORAL_MEAN_SPEED + " REAL NOT NULL, "
+                        + COLUMN_SPATIAL_MEAN_SPEED + " REAL NOT NULL, "
+                        + COLUMN_NAIVE_MEAN_SPEED + " REAL NOT NULL, "
+                        + COLUMN_SPEED_PERFORMANCE_INDEX + " REAL NOT NULL, "
+                        + COLUMN_SAMPLE_COUNT + " INTEGER NOT NULL, "
+                        + COLUMN_TIME_OF_INSERTION + " DATETIME DEFAULT CURRENT_TIMESTAMP, "
+                        + "PRIMARY KEY (" + COLUMN_CONNECTION_ID + ", " + COLUMN_INTERVAL_START + ")"
+                        + "); "
+                        + "CREATE INDEX agg_connection_index ON " + TABLE_AGGREGATED_METRICS + " (" + COLUMN_CONNECTION_ID + "); "
+                        + "CREATE INDEX agg_interval_index ON " + TABLE_AGGREGATED_METRICS + " (" + COLUMN_INTERVAL_START + "); ";
         if (inMemory) { // read from existing backup if a database exists
             String restoreDatabaseSql = "RESTORE FROM " + databasePath;
             if (Files.exists(databasePath.toAbsolutePath().normalize())) {
@@ -236,6 +272,7 @@ public class FcdDatabaseHelper implements FcdDataStorage {
                 statement.execute("DROP TABLE IF EXISTS " + TABLE_CONNECTIONS + ";");
                 statement.execute("DROP TABLE IF EXISTS " + TABLE_TRAVERSAL_METRICS + ";");
                 statement.execute("DROP TABLE IF EXISTS " + TABLE_THRESHOLDS + ";");
+                statement.execute("DROP TABLE IF EXISTS " + TABLE_AGGREGATED_METRICS + ";");
             }
         }
         try (Statement statement = connection.createStatement()) {
@@ -243,6 +280,7 @@ public class FcdDatabaseHelper implements FcdDataStorage {
             statement.execute(traversalMetricsSql);
             statement.execute(thresholdsSql);
             statement.execute(connectionsTableSql);
+            statement.execute(aggregatedMetricsSql);
         }
     }
 
@@ -308,7 +346,7 @@ public class FcdDatabaseHelper implements FcdDataStorage {
     @Override
     public void insertTraversalMetrics(String vehicleId, long timestamp, String connectionId,
                                        String nextConnection, double spatialMeanSpeed, double temporalMeanSpeed,
-                                       double naiveMeanSpeed, float relativeMetric, long traversalTime) {
+                                       double naiveMeanSpeed, float relativeMetric, double speedPerformanceIndex, long traversalTime) {
         String sqlSubMetricInsert = "INSERT INTO " + TABLE_TRAVERSAL_METRICS + "("
                 + COLUMN_VEH_ID + ","
                 + COLUMN_TIME_STAMP + ","
@@ -711,10 +749,41 @@ public class FcdDatabaseHelper implements FcdDataStorage {
     }
 
     @Override
+    public void insertAggregatedTraversalMetrics(String connectionId, long intervalStart, long intervalEnd,
+                                                 double avgTemporalMeanSpeed, double avgSpatialMeanSpeed,
+                                                 double avgNaiveMeanSpeed, double avgSpeedPerformanceIndex,
+                                                 int sampleCount) {
+        String sqlInsert = "INSERT OR REPLACE INTO " + TABLE_AGGREGATED_METRICS + "("
+                + COLUMN_CONNECTION_ID + ","
+                + COLUMN_INTERVAL_START + ","
+                + COLUMN_INTERVAL_END + ","
+                + COLUMN_TEMPORAL_MEAN_SPEED + ","
+                + COLUMN_SPATIAL_MEAN_SPEED + ","
+                + COLUMN_NAIVE_MEAN_SPEED + ","
+                + COLUMN_SPEED_PERFORMANCE_INDEX + ","
+                + COLUMN_SAMPLE_COUNT + ")"
+                + " VALUES(?,?,?,?,?,?,?,?)";
+        try (PreparedStatement statement = connection.prepareStatement(sqlInsert)) {
+            statement.setString(1, connectionId);
+            statement.setLong(2, intervalStart);
+            statement.setLong(3, intervalEnd);
+            statement.setDouble(4, avgTemporalMeanSpeed);
+            statement.setDouble(5, avgSpatialMeanSpeed);
+            statement.setDouble(6, avgNaiveMeanSpeed);
+            statement.setDouble(7, avgSpeedPerformanceIndex);
+            statement.setInt(8, sampleCount);
+            statement.execute();
+        } catch (SQLException exception) {
+            logErrorAndThrowRuntimeException(exception, "AGGREGATED METRIC INSERTION");
+        }
+    }
+
+    @Override
     public String getStatisticsString() {
         String statisticsString = "Statistics for FCD Database:";
         statisticsString += System.lineSeparator() + "Record Amount: " + getRowAmount(TABLE_RECORDS);
         statisticsString += System.lineSeparator() + "Traversal Amount: " + getRowAmount(TABLE_TRAVERSAL_METRICS);
+        statisticsString += System.lineSeparator() + "Aggregated Metrics Amount: " + getRowAmount(TABLE_AGGREGATED_METRICS);
         statisticsString += System.lineSeparator() + "Threshold Amount: " + getRowAmount(TABLE_THRESHOLDS);
         statisticsString += System.lineSeparator() + "Connection Amount: " + getRowAmount(TABLE_CONNECTIONS);
         return statisticsString;

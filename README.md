@@ -129,20 +129,26 @@ which are used to configure the vehicles and the server respectively.
 ```
 
 *TseServerApp.json*
+
+> **Breaking change:** The default storage backend has switched from SQLite (`FcdDatabaseHelper`) to Parquet (`FcdParquetStorage`).
+> Existing scenarios that omit `fcdDataStorage` or relied on `FcdDatabaseHelper` as the default will now produce Parquet output instead of a SQLite database.
+> To keep SQLite, explicitly set `"fcdDataStorage": {"type": "FcdDatabaseHelper"}` in your config (deprecated — SQLite support may be removed in a future release).
+
 ```json
 {
-      "fcdDataStorage": {
-        "type": "FcdDatabaseHelper",
-        "inMemory": false
-    },
-    "databasePath": null,
-    "databaseFileName": null,
     "isPersistent": false,
+    "parquetOutputPath": null,
     "unitRemovalInterval" : "60min",
     "unitExpirationTime" : "30min",
     "traversalBasedProcessors": [
         {
             "type": "SpatioTemporalProcessor",
+            "spatialMeanSpeedChunkSize": "15m"
+        },
+        {
+            "type": "AggregatedSpatioTemporalProcessor",
+            "aggregationInterval": "15min",
+            "processingDelay": "5min",
             "spatialMeanSpeedChunkSize": "15m"
         }
     ],
@@ -153,6 +159,30 @@ which are used to configure the vehicles and the server respectively.
             "defaultRedLightDuration": "45s",
             "minTraversalsForThreshold": 10,
             "recomputeAllRtsmWithNewThreshold": false
+        }
+    ]
+}
+```
+
+**Aggregated Spatio-Temporal Metrics**
+The `AggregatedSpatioTemporalProcessor` aggregates traffic metrics over configurable time intervals, reducing data volume while preserving analytical value.
+Each traversal is assigned to a time bucket; completed buckets are flushed automatically once the simulation clock advances past `intervalEnd + processingDelay`.
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `aggregationInterval` | Time | 15 minutes | Length of each aggregation window |
+| `processingDelay` | Time | 5 minutes | Extra wait before flushing, to absorb late-arriving data |
+| `spatialMeanSpeedChunkSize` | Distance | 15 meters | Chunk size for spatial mean speed calculation |
+
+To use only aggregated metrics (omitting per-traversal records), exclude `SpatioTemporalProcessor`:
+
+```json
+{
+    "traversalBasedProcessors": [
+        {
+            "type": "AggregatedSpatioTemporalProcessor",
+            "aggregationInterval": "15min",
+            "processingDelay": "5min"
         }
     ]
 }
@@ -172,6 +202,39 @@ To achieve this, you can add the `FcdWriterProcessor` to your list of `timeBased
     ]
 }
 ```
+
+**Parquet File Support**
+The application stores Floating Car Data (FCD) and traffic metrics in Apache Parquet by default. Parquet is optimized for analytics and provides significant performance benefits over the legacy SQLite backend, especially for large-scale simulations.
+
+Output is written to a `parquet-output/` subdirectory of the application log directory. To override the location, set `parquetOutputPath` in `TseServerApp.json`:
+
+```json
+{
+    "parquetOutputPath": "/path/to/output/directory"
+}
+```
+
+The application generates several Parquet files containing different types of data:
+
+| File Name | Description | Key Fields |
+|-----------|-------------|------------|
+| `fcd_records.parquet` | Raw FCD messages received from vehicles | `vehicleId`, `timestamp`, `speed`, `position` (GeoParquet) |
+| `traversal_metrics.parquet` | Metrics calculated per edge traversal | `temporalMeanSpeed`, `spatialMeanSpeed`, `naiveMeanSpeed`, `speedPerformanceIndex` |
+| `aggregated_metrics.parquet` | Metrics aggregated over time intervals | `avgTemporalMeanSpeed`, `avgSpatialMeanSpeed`, `sampleCount` |
+| `thresholds.parquet` | Dynamic speed thresholds calculated by the system | `temporalThreshold`, `spatialThreshold` |
+| `connection_data.parquet` | Static network information | `connectionID`, `length`, `maxSpeed` |
+
+### Writing Custom Parquet Files
+
+The application provides a flexible API for writing custom data to Parquet files using the `ParquetSink` interface. 
+This allows developers to easily extend the application with new data sinks.
+
+#### Key Components
+
+- **Schema**: Defines the structure of the data using Avro JSON format.
+- **RecordEncoder**: Maps your Java object fields to the Avro record.
+- **ParquetSink**: Handles the efficient writing of records to the file system.
+- **ParquetSinkConfig**: Manages file paths and compression settings.
 
 ## Evaluation Utilities
 Within the **evaluation** directory, we bundled python scripts for reading and preprocessing simulation data.

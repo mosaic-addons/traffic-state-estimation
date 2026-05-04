@@ -1,16 +1,20 @@
 {
     "fcdDataStorage": {
-        "type": "FcdDatabaseHelper",
-        "inMemory": false
+        "type": "FcdParquetStorage"
     },
-    "databasePath": null,
-    "databaseFileName": null,
+    "parquetOutputPath": null,
     "isPersistent": false,
     "unitRemovalInterval" : "60min",
     "unitExpirationTime" : "30min",
     "traversalBasedProcessors": [
         {
             "type": "SpatioTemporalProcessor",
+            "spatialMeanSpeedChunkSize": "15m"
+        },
+        {
+            "type": "AggregatedSpatioTemporalProcessor",
+            "aggregationInterval": "15min",
+            "processingDelay": "5min",
             "spatialMeanSpeedChunkSize": "15m"
         }
     ],

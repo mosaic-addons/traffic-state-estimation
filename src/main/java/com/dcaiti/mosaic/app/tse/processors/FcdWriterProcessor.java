@@ -34,7 +34,7 @@ public class FcdWriterProcessor extends TimeBasedProcessor<FcdRecord, FcdUpdateM
 
     @Override
     public void shutdown(long shutdownTime) {
-        logger.info("Final Persistence of FCD Records for {} vehicles.", recordBuffer.keySet().size());
+        logger.info("Final Persistence of FCD Records for {} vehicles.", recordBuffer.size());
         persistRecords();
     }
 
@@ -52,7 +52,7 @@ public class FcdWriterProcessor extends TimeBasedProcessor<FcdRecord, FcdUpdateM
 
     @Override
     public void triggerEvent(long eventTime) {
-        logger.info("Persisting FCD Records for {} vehicles.", recordBuffer.keySet().size());
+        logger.info("Persisting FCD Records for {} vehicles.", recordBuffer.size());
         persistRecords();
     }
 
