@@ -142,9 +142,10 @@ public class FcdParquetStorage implements FcdDataStorage {
     private long thresholdCount = 0;
     private long connectionCount = 0;
     private long aggregatedMetricCount = 0;
+    private final ArrayList<AggregatedMetricRecord> aggregatedMetricsCache = new ArrayList<>();
 
-    private String outputPath;
-    private UnitLogger log;
+    protected String outputPath;
+    protected UnitLogger log;
 
     @Override
     public void initialize(Path databasePath, Database networkDatabase, boolean isPersistent, UnitLogger log) {
@@ -431,9 +432,7 @@ public class FcdParquetStorage implements FcdDataStorage {
 
     @Override
     public void insertSampledMeanSpeeds(IMetricsBuffer metricsBuffer) {
-        // This method is currently not implemented in the SQLite version either
-        // Can be added later if needed
-        log.warn("insertSampledMeanSpeeds is not implemented for Parquet storage");
+        // no-op in base TSE — overridden by ExtendedFcdParquetStorage
     }
 
     @Override
@@ -451,10 +450,24 @@ public class FcdParquetStorage implements FcdDataStorage {
         try {
             aggregatedSink.write(record);
             aggregatedMetricCount++;
+            synchronized (aggregatedMetricsCache) {
+                aggregatedMetricsCache.add(record);
+            }
         } catch (IOException e) {
             log.error("Failed to write aggregated metric for connection {} at interval {}-{}",
                     connectionId, intervalStart, intervalEnd, e);
             throw new RuntimeException("Failed to write aggregated metric", e);
+        }
+    }
+
+    /**
+     * Returns all aggregated metrics written during runtime.
+     *
+     * @return list of aggregated metric records
+     */
+    protected List<AggregatedMetricRecord> getAggregatedMetricRecords() {
+        synchronized (aggregatedMetricsCache) {
+            return new ArrayList<>(aggregatedMetricsCache);
         }
     }
 
