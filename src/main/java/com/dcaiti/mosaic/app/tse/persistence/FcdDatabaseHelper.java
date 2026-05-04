@@ -19,6 +19,7 @@ import com.dcaiti.mosaic.app.fxd.data.FcdRecord;
 import com.dcaiti.mosaic.app.tse.config.CTseServerApp;
 import com.dcaiti.mosaic.app.tse.data.IMetricsBuffer;
 import com.dcaiti.mosaic.app.tse.data.TraversalStatistics;
+import org.eclipse.mosaic.fed.application.ambassador.SimulationKernel;
 import org.eclipse.mosaic.fed.application.ambassador.util.UnitLogger;
 import org.eclipse.mosaic.lib.database.Database;
 
@@ -27,6 +28,7 @@ import org.apache.commons.math3.util.Pair;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -109,6 +111,15 @@ public class FcdDatabaseHelper implements FcdDataStorage {
      * through connect/close calls.
      */
     protected Connection connection;
+
+    @Override
+    public Path resolveOutputPath(CTseServerApp config) {
+        String dir = config.databasePath != null
+                ? config.databasePath
+                : SimulationKernel.SimulationKernel.getMainLogDirectory().toString();
+        String file = config.databaseFileName != null ? config.databaseFileName : "FcdData.sqlite";
+        return Paths.get(dir, file);
+    }
 
     /**
      * Inits the DB connection and sets up tables and the cache.

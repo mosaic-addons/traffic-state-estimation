@@ -16,6 +16,7 @@
 package com.dcaiti.mosaic.app.tse.persistence;
 
 import com.dcaiti.mosaic.app.fxd.data.FcdRecord;
+import com.dcaiti.mosaic.app.tse.config.CTseServerApp;
 import com.dcaiti.mosaic.app.tse.data.IMetricsBuffer;
 import com.dcaiti.mosaic.app.tse.data.TraversalStatistics;
 import org.eclipse.mosaic.fed.application.ambassador.util.UnitLogger;
@@ -91,4 +92,13 @@ public interface FcdDataStorage {
                                           double avgTemporalMeanSpeed, double avgSpatialMeanSpeed,
                                           double avgNaiveMeanSpeed, double avgSpeedPerformanceIndex,
                                           int sampleCount);
+
+    /**
+     * Resolves the output {@link Path} for this storage implementation from the given config.
+     * Each implementation interprets the config fields relevant to its storage type.
+     *
+     * @param config the server application configuration
+     * @return the resolved output path
+     */
+    Path resolveOutputPath(CTseServerApp config);
 }

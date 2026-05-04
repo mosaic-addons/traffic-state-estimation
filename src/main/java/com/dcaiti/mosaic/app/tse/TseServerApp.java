@@ -20,12 +20,10 @@ import com.dcaiti.mosaic.app.fxd.data.FcdTraversal;
 import com.dcaiti.mosaic.app.fxd.messages.FcdUpdateMessage;
 import com.dcaiti.mosaic.app.tse.config.CTseServerApp;
 import com.dcaiti.mosaic.app.tse.persistence.FcdDataStorage;
-import com.dcaiti.mosaic.app.tse.persistence.FcdDatabaseHelper;
 import com.dcaiti.mosaic.app.tse.persistence.FcdParquetStorage;
 import com.dcaiti.mosaic.app.tse.persistence.ScenarioDatabaseHelper;
 import com.dcaiti.mosaic.app.tse.processors.SpatioTemporalProcessor;
 import com.dcaiti.mosaic.app.tse.processors.ThresholdProcessor;
-import org.eclipse.mosaic.fed.application.ambassador.SimulationKernel;
 import org.eclipse.mosaic.lib.database.Database;
 import org.eclipse.mosaic.lib.objects.v2x.V2xMessage;
 import org.eclipse.mosaic.lib.util.scheduling.EventManager;
@@ -33,7 +31,6 @@ import org.eclipse.mosaic.lib.util.scheduling.EventManager;
 import com.google.common.collect.Lists;
 
 import java.nio.file.Path;
-import java.nio.file.Paths;
 
 /**
  * An extension of {@link FxdReceiverApp} adding the data storage in the form of the {@link FcdDataStorage} and the
@@ -45,7 +42,7 @@ public class TseServerApp
 
     /**
      * Storage field, allowing to persist TSE results as well as data exchange between processors.
-     * Default value will be a {@link FcdDatabaseHelper}
+     * Default value is {@link FcdParquetStorage}.
      */
     private FcdDataStorage fcdDataStorage;
 
@@ -79,29 +76,7 @@ public class TseServerApp
         
         // Set data storage to configured type else use default FcdParquetStorage
         fcdDataStorage = config.fcdDataStorage == null ? new FcdParquetStorage() : config.fcdDataStorage;
-        
-        // Determine output path based on storage type
-        Path outputPath;
-        if (fcdDataStorage instanceof FcdDatabaseHelper) {
-            // Legacy SQLite mode: combine directory and filename
-            String databaseDirectory = config.databasePath == null
-                ? SimulationKernel.SimulationKernel.getMainLogDirectory().toString()
-                : config.databasePath;
-            String databaseFileName = config.databaseFileName == null 
-                ? "FcdData.sqlite" 
-                : config.databaseFileName;
-            outputPath = Paths.get(databaseDirectory, databaseFileName);
-        } else {
-            // Parquet mode: use directory only, or null to use log directory
-            if (config.parquetOutputPath != null) {
-                outputPath = Paths.get(config.parquetOutputPath);
-            } else {
-                // Use null to trigger ParquetFileManager to use SimulationKernel log directory
-                outputPath = SimulationKernel.SimulationKernel.getMainLogDirectory()
-                        .resolve("parquet-output")
-                        .toAbsolutePath();
-            }
-        }
+        Path outputPath = fcdDataStorage.resolveOutputPath(config);
 
         fcdDataStorage.initialize(outputPath, networkDatabase, config.isPersistent, getLog());
         return new TseKernel(eventManager, getLog(), config, fcdDataStorage, networkDatabase);

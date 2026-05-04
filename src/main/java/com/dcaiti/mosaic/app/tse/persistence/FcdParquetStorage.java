@@ -16,6 +16,7 @@
 package com.dcaiti.mosaic.app.tse.persistence;
 
 import com.dcaiti.mosaic.app.fxd.data.FcdRecord;
+import com.dcaiti.mosaic.app.tse.config.CTseServerApp;
 import com.dcaiti.mosaic.app.tse.data.AggregatedMetricRecord;
 import com.dcaiti.mosaic.app.tse.data.ConnectionRecord;
 import com.dcaiti.mosaic.app.tse.data.IMetricsBuffer;
@@ -26,6 +27,7 @@ import com.dcaiti.mosaic.app.tse.parquet.ParquetSink;
 import com.dcaiti.mosaic.app.tse.parquet.ParquetSinkConfig;
 import com.dcaiti.mosaic.app.tse.parquet.ParquetSinks;
 import com.dcaiti.mosaic.app.tse.parquet.RecordEncoder;
+import org.eclipse.mosaic.fed.application.ambassador.SimulationKernel;
 import org.eclipse.mosaic.fed.application.ambassador.util.UnitLogger;
 import org.eclipse.mosaic.lib.database.Database;
 
@@ -303,10 +305,9 @@ public class FcdParquetStorage implements FcdDataStorage {
 
             // Update caches for read operations - create TraversalStatistics for cache
             TraversalStatistics stat = new TraversalStatistics(
-                    connectionId, -1, timestamp, temporalMeanSpeed, spatialMeanSpeed,
-                    relativeMetric, speedPerformanceIndex
+                    connectionId, timestamp, 1, temporalMeanSpeed, spatialMeanSpeed,
+                    naiveMeanSpeed, relativeMetric, speedPerformanceIndex
             );
-            stat.setRelativeTrafficStatusMetric(relativeMetric);
 
             synchronized (traversalMetricsCache) {
                 traversalMetricsCache.add(stat);
@@ -403,6 +404,10 @@ public class FcdParquetStorage implements FcdDataStorage {
         try {
             long insertionTime = System.currentTimeMillis();
             for (String connectionId : temporal.keySet()) {
+                if (!spatial.containsKey(connectionId)) {
+                    log.warn("No spatial threshold for connection {}, skipping", connectionId);
+                    continue;
+                }
                 ThresholdRecord threshold = new ThresholdRecord(
                         connectionId,
                         temporal.get(connectionId),
@@ -554,6 +559,16 @@ public class FcdParquetStorage implements FcdDataStorage {
     @Override
     public boolean gotThresholdFor(String connectionId) {
         return thresholdCache.containsKey(connectionId);
+    }
+
+    @Override
+    public Path resolveOutputPath(CTseServerApp config) {
+        if (config.parquetOutputPath != null) {
+            return Paths.get(config.parquetOutputPath);
+        }
+        return SimulationKernel.SimulationKernel.getMainLogDirectory()
+                .resolve("parquet-output")
+                .toAbsolutePath();
     }
 
     @Override

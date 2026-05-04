@@ -129,15 +129,15 @@ which are used to configure the vehicles and the server respectively.
 ```
 
 *TseServerApp.json*
+
+> **Breaking change:** The default storage backend has switched from SQLite (`FcdDatabaseHelper`) to Parquet (`FcdParquetStorage`).
+> Existing scenarios that omit `fcdDataStorage` or relied on `FcdDatabaseHelper` as the default will now produce Parquet output instead of a SQLite database.
+> To keep SQLite, explicitly set `"fcdDataStorage": {"type": "FcdDatabaseHelper"}` in your config (deprecated — SQLite support may be removed in a future release).
+
 ```json
 {
-      "fcdDataStorage": {
-        "type": "FcdDatabaseHelper",
-        "inMemory": false
-    },
-    "databasePath": null,
-    "databaseFileName": null,
     "isPersistent": false,
+    "parquetOutputPath": null,
     "unitRemovalInterval" : "60min",
     "unitExpirationTime" : "30min",
     "traversalBasedProcessors": [
@@ -165,8 +165,28 @@ which are used to configure the vehicles and the server respectively.
 ```
 
 **Aggregated Spatio-Temporal Metrics**
-The `AggregatedSpatioTemporalProcessor` allows for aggregating traffic metrics over configurable time intervals, reducing data volume while preserving analytical value. 
-For more details and configuration examples, please refer to the [Aggregated Processor Documentation](AGGREGATED_PROCESSOR_EXAMPLE.md).
+The `AggregatedSpatioTemporalProcessor` aggregates traffic metrics over configurable time intervals, reducing data volume while preserving analytical value.
+Each traversal is assigned to a time bucket; completed buckets are flushed automatically once the simulation clock advances past `intervalEnd + processingDelay`.
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `aggregationInterval` | Time | 15 minutes | Length of each aggregation window |
+| `processingDelay` | Time | 5 minutes | Extra wait before flushing, to absorb late-arriving data |
+| `spatialMeanSpeedChunkSize` | Distance | 15 meters | Chunk size for spatial mean speed calculation |
+
+To use only aggregated metrics (omitting per-traversal records), exclude `SpatioTemporalProcessor`:
+
+```json
+{
+    "traversalBasedProcessors": [
+        {
+            "type": "AggregatedSpatioTemporalProcessor",
+            "aggregationInterval": "15min",
+            "processingDelay": "5min"
+        }
+    ]
+}
+```
 
 **Write all FCD into the database**
 For different purposes it can be useful to write all received FCD Records into the database.
@@ -184,21 +204,15 @@ To achieve this, you can add the `FcdWriterProcessor` to your list of `timeBased
 ```
 
 **Parquet File Support**
-The application supports efficient storage of Floating Car Data (FCD) and traffic metrics using Apache Parquet. This format is optimized for analytics and provides significant performance benefits over traditional database storage, especially for large-scale simulations.
+The application stores Floating Car Data (FCD) and traffic metrics in Apache Parquet by default. Parquet is optimized for analytics and provides significant performance benefits over the legacy SQLite backend, especially for large-scale simulations.
 
-To enable Parquet storage, configure the `TseServerApp.json` file in your scenario's `application` directory. Set the `fcdDataStorage` type to `FcdParquetStorage` and specify an optional `parquetOutputPath`.
+Output is written to a `parquet-output/` subdirectory of the application log directory. To override the location, set `parquetOutputPath` in `TseServerApp.json`:
 
 ```json
 {
-    "fcdDataStorage": {
-        "type": "FcdParquetStorage"
-    },
-    "parquetOutputPath": "/path/to/output/directory",
-    ...
+    "parquetOutputPath": "/path/to/output/directory"
 }
 ```
-
-If `parquetOutputPath` is not specified, files will be written to the application's log directory.
 
 The application generates several Parquet files containing different types of data:
 
